@@ -1,8 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
+import flightSearchReducer from '../features/flightSearch/state/flightSearchSlice';
 
 export const store = configureStore({
   reducer: {
-    // Add reducers here
+    flightSearch: flightSearchReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
