@@ -5,7 +5,7 @@ import { mockFlights } from '../data/mockFlights';
 
 /**
  * Hook to initialize mock flight data in development
- * This should only be used in development mode
+ * This is only  used in development mode
  */
 export const useMockData = () => {
   const dispatch = useAppDispatch();
