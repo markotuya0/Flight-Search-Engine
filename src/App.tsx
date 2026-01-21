@@ -2,8 +2,12 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 import { FlightTakeoff } from '@mui/icons-material';
 import { FlightSearchPage } from './features/flightSearch/ui/FlightSearchPage';
+import { useMockData } from './features/flightSearch/hooks/useMockData';
 
 const App: React.FC = () => {
+  // Initialize mock data in development
+  useMockData();
+
   return (
     <Box component="main" sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar position="static" elevation={1}>

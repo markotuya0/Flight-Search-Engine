@@ -18,6 +18,7 @@ import { SearchForm } from './SearchForm';
 import { FiltersPanel } from './FiltersPanel';
 import { ResultsGrid } from './ResultsGrid';
 import { PriceGraph } from './PriceGraph';
+import { FlightDebugInfo } from './FlightDebugInfo';
 
 const DRAWER_WIDTH = 320;
 
@@ -38,6 +39,9 @@ export const FlightSearchPage: React.FC = () => {
     <Container maxWidth="xl" sx={{ py: 3 }}>
       {/* Search Form - Always at top */}
       <SearchForm />
+      
+      {/* Debug Info - Development only */}
+      <FlightDebugInfo />
 
       {/* Desktop Layout */}
       {!isMobile ? (

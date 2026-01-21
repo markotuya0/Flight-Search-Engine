@@ -1,2 +1,3 @@
 // Flight search Redux state management
-export {};
+export * from './flightSearchSlice';
+export * from './selectors';
