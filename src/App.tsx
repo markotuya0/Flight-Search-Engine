@@ -1,10 +1,11 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Container, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 import { FlightTakeoff } from '@mui/icons-material';
+import { FlightSearchPage } from './features/flightSearch/ui/FlightSearchPage';
 
 const App: React.FC = () => {
   return (
-    <Box component="main" sx={{ flexGrow: 1 }}>
+    <Box component="main" sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar position="static" elevation={1}>
         <Toolbar>
           <FlightTakeoff 
@@ -22,24 +23,7 @@ const App: React.FC = () => {
         </Toolbar>
       </AppBar>
       
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          minHeight="60vh"
-          role="main"
-        >
-          <Typography 
-            variant="h4" 
-            component="h2" 
-            textAlign="center"
-            color="text.primary"
-          >
-            Flight Search
-          </Typography>
-        </Box>
-      </Container>
+      <FlightSearchPage />
     </Box>
   );
 };
