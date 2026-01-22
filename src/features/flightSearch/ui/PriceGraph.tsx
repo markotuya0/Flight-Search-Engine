@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Box,
-  Paper,
+  Card,
   Typography,
 } from '@mui/material';
 import {
@@ -35,7 +35,7 @@ export const PriceGraph: React.FC = () => {
   // No search performed yet
   if (status === 'idle' || allFlights.length === 0) {
     return (
-      <Paper elevation={1} sx={{ p: 3, mt: 3 }}>
+      <Card elevation={1} sx={{ p: 3, mt: 3 }}>
         <Typography variant="h6" gutterBottom>
           Price by Departure Time
         </Typography>
@@ -44,7 +44,7 @@ export const PriceGraph: React.FC = () => {
           message="Search for flights to see how prices vary by departure time throughout the day."
           icon={<TrendingUp sx={{ fontSize: 64, color: 'text.secondary' }} />}
         />
-      </Paper>
+      </Card>
     );
   }
 
@@ -83,7 +83,7 @@ export const PriceGraph: React.FC = () => {
   };
 
   return (
-    <Paper elevation={1} sx={{ p: 3, mt: 3 }}>
+    <Card elevation={1} sx={{ p: 3, mt: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h6">
           Price by Departure Time
@@ -152,6 +152,6 @@ export const PriceGraph: React.FC = () => {
           : 'This graph will show price trends by departure time when flights match your filters.'
         }
       </Typography>
-    </Paper>
+    </Card>
   );
 };

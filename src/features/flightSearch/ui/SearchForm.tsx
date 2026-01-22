@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Paper,
+  Card,
   TextField,
   Button,
   Typography,
@@ -81,8 +81,8 @@ export const SearchForm: React.FC = () => {
   const hasError = status === 'failed';
 
   return (
-    <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h6" gutterBottom>
+    <Card elevation={2} sx={{ p: 3, mb: 3 }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
         Search Flights
       </Typography>
       
@@ -239,6 +239,6 @@ export const SearchForm: React.FC = () => {
       <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
         💡 Try searching: JFK → LAX, LHR → CDG, or SYD → NRT
       </Typography>
-    </Paper>
+    </Card>
   );
 };

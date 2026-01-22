@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Box,
-  Paper,
+  Card,
   Typography,
   Slider,
   FormControl,
@@ -16,6 +16,7 @@ import {
   InputLabel,
   Chip,
   OutlinedInput,
+  Stack,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
@@ -129,7 +130,7 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ isMobile = false }) 
   }, [currentFilters, priceRange]);
 
   return (
-    <Paper 
+    <Card 
       elevation={isMobile ? 0 : 1} 
       sx={{ 
         p: 3, 
@@ -161,10 +162,11 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ isMobile = false }) 
       </Box>
 
       {/* Price Range */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle2" gutterBottom>
-          Price Range
-        </Typography>
+      <Stack spacing={3}>
+        <Box>
+          <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
+            Price Range
+          </Typography>
         <Slider
           value={localPriceRange}
           onChange={handlePriceChange}
@@ -184,13 +186,13 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ isMobile = false }) 
             ${localPriceRange[1]}
           </Typography>
         </Box>
-      </Box>
+        </Box>
 
-      <Divider sx={{ my: 2 }} />
+        <Divider />
 
-      {/* Airlines */}
-      <Box sx={{ mb: 3 }}>
-        <FormControl fullWidth>
+        {/* Airlines */}
+        <Box>
+          <FormControl fullWidth>
           <InputLabel>Airlines</InputLabel>
           <Select
             multiple
@@ -212,13 +214,13 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ isMobile = false }) 
             ))}
           </Select>
         </FormControl>
-      </Box>
+        </Box>
 
-      <Divider sx={{ my: 2 }} />
+        <Divider />
 
-      {/* Stops */}
-      <Box sx={{ mb: 3 }}>
-        <FormControl component="fieldset">
+        {/* Stops */}
+        <Box>
+          <FormControl component="fieldset">
           <FormLabel component="legend">Stops</FormLabel>
           <FormGroup>
             <FormControlLabel
@@ -250,7 +252,8 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ isMobile = false }) 
             />
           </FormGroup>
         </FormControl>
-      </Box>
-    </Paper>
+        </Box>
+      </Stack>
+    </Card>
   );
 };
