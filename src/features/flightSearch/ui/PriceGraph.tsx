@@ -68,7 +68,7 @@ export const PriceGraph: React.FC = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ height: 300, width: '100%' }}>
+      <Box sx={{ height: 300, width: '100%', minHeight: 300, minWidth: 300 }}>
         {priceSeries.length === 0 ? (
           // Empty state
           <Box 
@@ -102,7 +102,10 @@ export const PriceGraph: React.FC = () => {
               <YAxis 
                 tick={{ fontSize: 12 }}
                 tickFormatter={(value) => `$${value}`}
-                domain={['dataMin - 50', 'dataMax + 50']}
+                domain={[
+                  (dataMin: number) => Math.max(0, Math.floor(dataMin * 0.9)),
+                  (dataMax: number) => Math.ceil(dataMax * 1.1)
+                ]}
               />
               <Tooltip content={<CustomTooltip />} />
               <Line 

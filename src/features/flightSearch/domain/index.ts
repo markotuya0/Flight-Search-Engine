@@ -2,3 +2,4 @@
 export * from './types';
 export * from './applyFilters';
 export * from './buildPriceSeries';
+export * from './normalize';

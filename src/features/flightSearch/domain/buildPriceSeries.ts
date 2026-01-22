@@ -17,10 +17,20 @@ export const buildPriceSeries = (flights: Flight[]): PriceSeriesPoint[] => {
     return [];
   }
 
+  // Filter out flights with invalid prices (too high, negative, or NaN)
+  const validFlights = flights.filter(flight => {
+    const price = flight.priceTotal;
+    return !isNaN(price) && price > 0 && price < 50000; // Reasonable price range
+  });
+
+  if (validFlights.length === 0) {
+    return [];
+  }
+
   // Group flights by departure hour
   const hourlyFlights = new Map<number, Flight[]>();
 
-  flights.forEach(flight => {
+  validFlights.forEach(flight => {
     const departureDate = new Date(flight.departAt);
     const hour = departureDate.getHours();
     
@@ -37,10 +47,13 @@ export const buildPriceSeries = (flights: Flight[]): PriceSeriesPoint[] => {
     const prices = flightsInHour.map(flight => flight.priceTotal);
     const minPrice = Math.min(...prices);
     
-    priceSeriesPoints.push({
-      hour,
-      minPrice,
-    });
+    // Double-check the min price is valid
+    if (!isNaN(minPrice) && minPrice > 0 && minPrice < 50000) {
+      priceSeriesPoints.push({
+        hour,
+        minPrice: Math.round(minPrice), // Round to avoid decimal display issues
+      });
+    }
   });
 
   // Sort by hour for consistent chart display
