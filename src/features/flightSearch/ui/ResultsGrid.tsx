@@ -16,8 +16,10 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { FlightTakeoff, AccessTime } from '@mui/icons-material';
-import { useAppSelector } from '../../../app/hooks';
-import { selectFilteredFlights } from '../state/selectors';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { selectFilteredFlights, selectStatus, selectError, selectSearchParams, selectAllFlights } from '../state/selectors';
+import { fetchFlights } from '../state/flightSearchSlice';
+import { FlightGridSkeleton, ErrorState, EmptyState, WelcomeState } from '../../../shared/components';
 import type { Flight } from '../domain/types';
 
 // Helper function to format duration from minutes to "Xh Ym"
@@ -140,9 +142,59 @@ const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
 };
 
 export const ResultsGrid: React.FC = () => {
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
   const flights = useAppSelector(selectFilteredFlights);
+  const allFlights = useAppSelector(selectAllFlights);
+  const status = useAppSelector(selectStatus);
+  const error = useAppSelector(selectError);
+  const searchParams = useAppSelector(selectSearchParams);
+
+  // Handle retry
+  const handleRetry = () => {
+    if (searchParams.origin && searchParams.destination && searchParams.departDate) {
+      dispatch(fetchFlights(searchParams));
+    }
+  };
+
+  // Loading state
+  if (status === 'loading') {
+    return <FlightGridSkeleton />;
+  }
+
+  // Error state
+  if (status === 'failed') {
+    return (
+      <ErrorState
+        title="Failed to Load Flights"
+        message={error || 'We encountered an error while searching for flights. Please try again.'}
+        onRetry={handleRetry}
+        retryLabel="Search Again"
+      />
+    );
+  }
+
+  // Welcome state (no search performed yet)
+  if (status === 'idle' || allFlights.length === 0) {
+    return <WelcomeState />;
+  }
+
+  // Empty state (search performed but no results after filtering)
+  if (flights.length === 0) {
+    return (
+      <EmptyState
+        title="No flights match your filters"
+        message="Try adjusting your price range, airline preferences, or number of stops to see more results."
+        actionLabel="Clear All Filters"
+        onAction={() => {
+          // This would trigger filter reset - we'll implement this later
+          console.log('Clear filters');
+        }}
+      />
+    );
+  }
 
   // Transform flights data for DataGrid
   const rows = flights.map((flight: Flight) => ({

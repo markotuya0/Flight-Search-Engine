@@ -1,6 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { FlightSearchState, SearchParams, Filters, Flight } from '../domain/types';
+import { searchFlights } from '../api/searchFlights';
+import { normalizeAmadeusResponse } from '../domain/normalize';
+
+// Async thunk for fetching flights from Amadeus API
+export const fetchFlights = createAsyncThunk(
+  'flightSearch/fetchFlights',
+  async (searchParams: SearchParams, { rejectWithValue }) => {
+    try {
+      const response = await searchFlights(searchParams);
+      const flights = normalizeAmadeusResponse(response);
+      return { flights, searchParams };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to fetch flights';
+      return rejectWithValue(message);
+    }
+  }
+);
 
 // Initial state
 const initialState: FlightSearchState = {
@@ -89,6 +106,41 @@ const flightSearchSlice = createSlice({
     clearError: (state) => {
       state.error = undefined;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchFlights.pending, (state) => {
+        state.status = 'loading';
+        state.error = undefined;
+      })
+      .addCase(fetchFlights.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.error = undefined;
+        state.allFlights = action.payload.flights;
+        state.searchParams = { ...state.searchParams, ...action.payload.searchParams };
+        
+        // Initialize price range based on actual flight data
+        if (action.payload.flights.length > 0) {
+          const prices = action.payload.flights.map(flight => flight.priceTotal);
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
+          
+          // Reset filters to show all results from new search
+          state.filters = {
+            stops: [],
+            airlines: [],
+            price: {
+              min: minPrice,
+              max: maxPrice,
+            },
+          };
+        }
+      })
+      .addCase(fetchFlights.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string;
+        state.allFlights = [];
+      });
   },
 });
 

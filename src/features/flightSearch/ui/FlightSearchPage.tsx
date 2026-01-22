@@ -9,6 +9,8 @@ import {
   Fab,
   Badge,
   Stack,
+  Typography,
+  Slide,
 } from '@mui/material';
 import {
   FilterList,
@@ -19,6 +21,8 @@ import { FiltersPanel } from './FiltersPanel';
 import { ResultsGrid } from './ResultsGrid';
 import { PriceGraph } from './PriceGraph';
 import { FlightDebugInfo } from './FlightDebugInfo';
+import { useAppSelector } from '../../../app/hooks';
+import { selectFilters, selectAllFlights } from '../state/selectors';
 
 const DRAWER_WIDTH = 320;
 
@@ -26,6 +30,32 @@ export const FlightSearchPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
+  
+  const filters = useAppSelector(selectFilters);
+  const allFlights = useAppSelector(selectAllFlights);
+
+  // Calculate active filter count for mobile badge
+  const activeFiltersCount = React.useMemo(() => {
+    let count = 0;
+    
+    // Check if stops filter is active
+    if (filters.stops.length > 0) count++;
+    
+    // Check if airlines filter is active
+    if (filters.airlines.length > 0) count++;
+    
+    // Check if price filter is modified (assuming we have flight data to compare against)
+    if (allFlights.length > 0) {
+      const prices = allFlights.map(f => f.priceTotal);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      if (filters.price.min > minPrice || filters.price.max < maxPrice) {
+        count++;
+      }
+    }
+    
+    return count;
+  }, [filters, allFlights]);
 
   const handleToggleFilters = () => {
     setMobileFiltersOpen(!mobileFiltersOpen);
@@ -73,22 +103,30 @@ export const FlightSearchPage: React.FC = () => {
             <PriceGraph />
           </Stack>
 
-          {/* Mobile Filters Button */}
-          <Fab
-            color="primary"
-            aria-label="filters"
-            onClick={handleToggleFilters}
-            sx={{
-              position: 'fixed',
-              bottom: 24,
-              right: 24,
-              zIndex: theme.zIndex.speedDial,
-            }}
-          >
-            <Badge badgeContent={3} color="secondary">
-              <FilterList />
-            </Badge>
-          </Fab>
+          {/* Mobile Filters Button - Only show when there are flights */}
+          {allFlights.length > 0 && (
+            <Slide direction="up" in={true} mountOnEnter unmountOnExit>
+              <Fab
+                color="primary"
+                aria-label="filters"
+                onClick={handleToggleFilters}
+                sx={{
+                  position: 'fixed',
+                  bottom: 24,
+                  right: 24,
+                  zIndex: theme.zIndex.speedDial,
+                }}
+              >
+                <Badge 
+                  badgeContent={activeFiltersCount} 
+                  color="secondary"
+                  invisible={activeFiltersCount === 0}
+                >
+                  <FilterList />
+                </Badge>
+              </Fab>
+            </Slide>
+          )}
 
           {/* Mobile Filters Drawer */}
           <Drawer
@@ -111,9 +149,22 @@ export const FlightSearchPage: React.FC = () => {
                 p: 2,
                 borderBottom: 1,
                 borderColor: 'divider',
+                bgcolor: 'background.paper',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1,
               }}
             >
-              <Box />
+              <Typography variant="h6">
+                Filters
+                {activeFiltersCount > 0 && (
+                  <Badge 
+                    badgeContent={activeFiltersCount} 
+                    color="primary" 
+                    sx={{ ml: 1 }}
+                  />
+                )}
+              </Typography>
               <Button
                 startIcon={<Close />}
                 onClick={handleCloseFilters}
