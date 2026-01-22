@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   Box, 
   Skeleton, 
-  Paper, 
+  Card, 
   Stack,
   useTheme,
   useMediaQuery 
@@ -20,7 +20,7 @@ export const FlightGridSkeleton: React.FC = () => {
     return (
       <Box>
         {Array.from({ length: 6 }).map((_, index) => (
-          <Paper key={index} elevation={1} sx={{ p: 2, mb: 2 }}>
+          <Card key={index} elevation={1} sx={{ p: 2, mb: 2 }}>
             <Stack spacing={2}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Skeleton variant="circular" width={32} height={32} />
@@ -42,7 +42,7 @@ export const FlightGridSkeleton: React.FC = () => {
                 <Skeleton variant="text" width={80} height={24} />
               </Box>
             </Stack>
-          </Paper>
+          </Card>
         ))}
       </Box>
     );
@@ -50,7 +50,7 @@ export const FlightGridSkeleton: React.FC = () => {
 
   // Desktop: DataGrid skeleton
   return (
-    <Paper elevation={1} sx={{ height: 400, p: 2 }}>
+    <Card elevation={1} sx={{ height: 400, p: 2 }}>
       {/* Header row */}
       <Box sx={{ display: 'flex', gap: 2, mb: 2, pb: 1, borderBottom: 1, borderColor: 'divider' }}>
         <Skeleton variant="text" width={80} height={24} />
@@ -74,7 +74,7 @@ export const FlightGridSkeleton: React.FC = () => {
           <Skeleton variant="text" width={80} height={20} />
         </Box>
       ))}
-    </Paper>
+    </Card>
   );
 };
 
@@ -83,7 +83,7 @@ export const FlightGridSkeleton: React.FC = () => {
  */
 export const PriceGraphSkeleton: React.FC = () => {
   return (
-    <Paper elevation={1} sx={{ p: 3, mt: 3 }}>
+    <Card elevation={1} sx={{ p: 3, mt: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Skeleton variant="text" width={200} height={32} />
         <Skeleton variant="text" width={100} height={20} />
@@ -128,7 +128,7 @@ export const PriceGraphSkeleton: React.FC = () => {
       </Box>
       
       <Skeleton variant="text" width="80%" height={16} sx={{ mt: 2 }} />
-    </Paper>
+    </Card>
   );
 };
 
@@ -137,7 +137,7 @@ export const PriceGraphSkeleton: React.FC = () => {
  */
 export const FiltersPanelSkeleton: React.FC = () => {
   return (
-    <Paper elevation={1} sx={{ p: 3, height: 'fit-content' }}>
+    <Card elevation={1} sx={{ p: 3, height: 'fit-content' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Skeleton variant="text" width={80} height={32} />
         <Skeleton variant="text" width={60} height={24} />
@@ -168,6 +168,6 @@ export const FiltersPanelSkeleton: React.FC = () => {
           </Box>
         ))}
       </Box>
-    </Paper>
+    </Card>
   );
 };

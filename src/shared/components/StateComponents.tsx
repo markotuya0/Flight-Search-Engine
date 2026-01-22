@@ -3,7 +3,7 @@ import {
   Box,
   Typography,
   Button,
-  Paper,
+  Card,
   Stack,
   Alert,
 } from '@mui/material';
@@ -31,7 +31,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
   retryLabel = 'Try Again',
 }) => {
   return (
-    <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
+    <Card elevation={1} sx={{ p: 4, textAlign: 'center' }}>
       <Stack spacing={3} alignItems="center">
         <ErrorOutline sx={{ fontSize: 64, color: 'error.main' }} />
         
@@ -55,7 +55,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
           </Button>
         )}
       </Stack>
-    </Paper>
+    </Card>
   );
 };
 
@@ -78,7 +78,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   icon,
 }) => {
   return (
-    <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
+    <Card elevation={1} sx={{ p: 4, textAlign: 'center' }}>
       <Stack spacing={3} alignItems="center">
         {icon || <SearchOff sx={{ fontSize: 64, color: 'text.secondary' }} />}
         
@@ -101,7 +101,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           </Button>
         )}
       </Stack>
-    </Paper>
+    </Card>
   );
 };
 
@@ -110,7 +110,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
  */
 export const WelcomeState: React.FC = () => {
   return (
-    <Paper elevation={1} sx={{ p: 4, textAlign: 'center' }}>
+    <Card elevation={1} sx={{ p: 4, textAlign: 'center' }}>
       <Stack spacing={3} alignItems="center">
         <FlightTakeoff sx={{ fontSize: 64, color: 'primary.main' }} />
         
@@ -130,6 +130,6 @@ export const WelcomeState: React.FC = () => {
           </Typography>
         </Alert>
       </Stack>
-    </Paper>
+    </Card>
   );
 };
