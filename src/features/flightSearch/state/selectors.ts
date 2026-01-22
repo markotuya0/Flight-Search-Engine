@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../../../app/store';
 import type { Flight } from '../domain/types';
+import { applyFilters } from '../domain/applyFilters';
 
 // Base selectors
 export const selectFlightSearchState = (state: RootState) => state.flightSearch;
@@ -15,43 +16,11 @@ export const selectError = (state: RootState) => state.flightSearch.error;
 export const selectIsLoading = (state: RootState) => state.flightSearch.status === 'loading';
 export const selectHasError = (state: RootState) => !!state.flightSearch.error;
 
-// Filtered flights selector
+// Filtered flights selector - uses pure domain function
 export const selectFilteredFlights = createSelector(
   [selectAllFlights, selectFilters],
   (flights: Flight[], filters) => {
-    return flights.filter((flight) => {
-      // Filter by stops - only apply if stops are selected
-      if (filters.stops.length > 0) {
-        const matchesStops = filters.stops.some(selectedStops => {
-          if (selectedStops === 2) {
-            // "2+ stops" means 2 or more stops
-            return flight.stops >= 2;
-          }
-          return flight.stops === selectedStops;
-        });
-        
-        if (!matchesStops) {
-          return false;
-        }
-      }
-
-      // Filter by airlines
-      if (filters.airlines.length > 0) {
-        const hasMatchingAirline = flight.airlineCodes.some(code => 
-          filters.airlines.includes(code)
-        );
-        if (!hasMatchingAirline) {
-          return false;
-        }
-      }
-
-      // Filter by price
-      if (flight.priceTotal < filters.price.min || flight.priceTotal > filters.price.max) {
-        return false;
-      }
-
-      return true;
-    });
+    return applyFilters(flights, filters);
   }
 );
 
