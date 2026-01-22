@@ -83,13 +83,13 @@ export const PriceGraph: React.FC = () => {
   };
 
   return (
-    <Card elevation={1} sx={{ p: 3, mt: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h6">
-          Price by Departure Time
+    <Card elevation={1} sx={{ p: 4, borderRadius: 3 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+          Price Trend for Filtered Results
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {priceSeries.length > 0 ? `${priceSeries.length} time slots` : 'No data'}
+          Minimum price per departure hour • Updates with your filters • {priceSeries.length > 0 ? `${priceSeries.length} time slots` : 'No data'}
         </Typography>
       </Box>
 
@@ -146,9 +146,9 @@ export const PriceGraph: React.FC = () => {
         )}
       </Box>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 3, fontStyle: 'italic' }}>
         {priceSeries.length > 0 
-          ? 'Shows minimum price for each departure hour from filtered results. Early morning and late evening flights are often cheaper.'
+          ? 'Early morning and late evening flights are often cheaper. Hover over points for details.'
           : 'This graph will show price trends by departure time when flights match your filters.'
         }
       </Typography>

@@ -81,9 +81,9 @@ export const SearchForm: React.FC = () => {
   const hasError = status === 'failed';
 
   return (
-    <Card elevation={2} sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-        Search Flights
+    <Card elevation={2} sx={{ p: 4, mb: 4, borderRadius: 3 }}>
+      <Typography variant="h5" gutterBottom sx={{ mb: 4, fontWeight: 600, color: 'text.primary' }}>
+        Find Your Perfect Flight
       </Typography>
       
       {hasError && (
@@ -93,16 +93,11 @@ export const SearchForm: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit}>
-        <Stack 
-          direction={{ xs: 'column', md: 'row' }} 
-          spacing={2}
-          alignItems="stretch"
-        >
-          {/* Origin and Destination with Swap Button */}
+        <Stack spacing={3}>
+          {/* Origin and Destination Row */}
           <Box sx={{ 
             display: 'flex', 
-            flex: { xs: 1, md: 2 }, 
-            gap: 1,
+            gap: 2,
             alignItems: 'center',
             flexDirection: { xs: 'column', sm: 'row' }
           }}>
@@ -118,7 +113,7 @@ export const SearchForm: React.FC = () => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <FlightTakeoff />
+                      <FlightTakeoff color="primary" />
                     </InputAdornment>
                   ),
                 }}
@@ -134,8 +129,13 @@ export const SearchForm: React.FC = () => {
                 mx: { xs: 0, sm: 1 },
                 my: { xs: 1, sm: 0 },
                 transform: { xs: 'rotate(90deg)', sm: 'none' },
-                bgcolor: 'action.hover',
-                '&:hover': { bgcolor: 'action.selected' }
+                bgcolor: 'primary.main',
+                color: 'white',
+                '&:hover': { 
+                  bgcolor: 'primary.dark',
+                  transform: { xs: 'rotate(90deg) scale(1.1)', sm: 'scale(1.1)' }
+                },
+                transition: 'all 0.2s ease-in-out'
               }}
               aria-label="Swap origin and destination"
             >
@@ -154,7 +154,7 @@ export const SearchForm: React.FC = () => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <FlightLand />
+                      <FlightLand color="primary" />
                     </InputAdornment>
                   ),
                 }}
@@ -163,18 +163,17 @@ export const SearchForm: React.FC = () => {
             </Box>
           </Box>
           
-          {/* Date and Passengers */}
+          {/* Date and Passengers Row */}
           <Box sx={{ 
             display: 'flex', 
             gap: 2, 
-            flex: 1,
             flexDirection: { xs: 'column', sm: 'row' }
           }}>
-            <Box sx={{ flex: 1 }}>
+            <Box sx={{ flex: 2 }}>
               <TextField
                 fullWidth
                 required
-                label="Departure"
+                label="Departure Date"
                 type="date"
                 value={formData.departDate}
                 onChange={handleChange('departDate')}
@@ -183,7 +182,7 @@ export const SearchForm: React.FC = () => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <DateRange />
+                      <DateRange color="primary" />
                     </InputAdornment>
                   ),
                 }}
@@ -193,7 +192,7 @@ export const SearchForm: React.FC = () => {
               />
             </Box>
             
-            <Box sx={{ minWidth: { xs: '100%', sm: 120 } }}>
+            <Box sx={{ flex: 1, minWidth: { xs: '100%', sm: 140 } }}>
               <TextField
                 fullWidth
                 label="Passengers"
@@ -205,40 +204,60 @@ export const SearchForm: React.FC = () => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Person />
+                      <Person color="primary" />
                     </InputAdornment>
                   ),
                 }}
               />
             </Box>
-          </Box>
-          
-          {/* Search Button */}
-          <Box sx={{ minWidth: { xs: '100%', md: 140 } }}>
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              type="submit"
-              disabled={isLoading || !formData.origin || !formData.destination || !formData.departDate}
-              sx={{ 
-                height: '56px',
-                fontSize: { xs: '1rem', md: '0.875rem' }
-              }}
-            >
-              {isLoading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Search'
-              )}
-            </Button>
+            
+            {/* Search Button */}
+            <Box sx={{ flex: 1, minWidth: { xs: '100%', sm: 160 } }}>
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                type="submit"
+                disabled={isLoading || !formData.origin || !formData.destination || !formData.departDate}
+                sx={{ 
+                  height: '56px',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  borderRadius: 2,
+                  boxShadow: '0 4px 12px rgba(25,118,210,0.3)',
+                  '&:hover': {
+                    boxShadow: '0 6px 20px rgba(25,118,210,0.4)',
+                    transform: 'translateY(-1px)',
+                  },
+                  transition: 'all 0.2s ease-in-out'
+                }}
+              >
+                {isLoading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  'Search Flights'
+                )}
+              </Button>
+            </Box>
           </Box>
         </Stack>
       </form>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-        💡 Try searching: JFK → LAX, LHR → CDG, or SYD → NRT
-      </Typography>
+      <Box sx={{ 
+        mt: 3, 
+        p: 3, 
+        bgcolor: 'grey.50', 
+        borderRadius: 2,
+        border: '1px solid',
+        borderColor: 'grey.200'
+      }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
+          💡 Popular Routes
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Try: JFK ↔ LAX • LHR ↔ CDG • SYD ↔ NRT • DXB ↔ SIN
+        </Typography>
+      </Box>
     </Card>
   );
 };

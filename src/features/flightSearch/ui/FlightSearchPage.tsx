@@ -66,140 +66,142 @@ export const FlightSearchPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      {/* Search Form - Always at top */}
-      <SearchForm />
-      
-      {/* Debug Info - Development only */}
-      <FlightDebugInfo />
+    <Box sx={{ bgcolor: 'background.default', minHeight: 'calc(100vh - 56px)' }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Modern Search Form Card */}
+        <SearchForm />
+        
+        {/* Debug Info - Development only */}
+        <FlightDebugInfo />
 
-      {/* Desktop Layout */}
-      {!isMobile ? (
-        <Box sx={{ display: 'flex', gap: 3 }}>
-          {/* Desktop Filters - Left Column */}
-          <Box
-            sx={{
-              width: DRAWER_WIDTH,
-              flexShrink: 0,
-            }}
-          >
-            <FiltersPanel />
+        {/* Desktop Layout */}
+        {!isMobile ? (
+          <Box sx={{ display: 'flex', gap: 3, mt: 2 }}>
+            {/* Desktop Filters - Left Column */}
+            <Box
+              sx={{
+                width: DRAWER_WIDTH,
+                flexShrink: 0,
+              }}
+            >
+              <FiltersPanel />
+            </Box>
+
+            {/* Main Content - Right Column */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Stack spacing={3}>
+                <ResultsGrid />
+                <PriceGraph />
+              </Stack>
+            </Box>
           </Box>
-
-          {/* Main Content - Right Column */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
+        ) : (
+          /* Mobile Layout */
+          <Box sx={{ position: 'relative', mt: 2 }}>
+            {/* Main Content - Full Width on Mobile */}
             <Stack spacing={3}>
               <ResultsGrid />
               <PriceGraph />
             </Stack>
-          </Box>
-        </Box>
-      ) : (
-        /* Mobile Layout */
-        <Box sx={{ position: 'relative' }}>
-          {/* Main Content - Full Width on Mobile */}
-          <Stack spacing={3}>
-            <ResultsGrid />
-            <PriceGraph />
-          </Stack>
 
-          {/* Mobile Filters Button - Only show when there are flights */}
-          {allFlights.length > 0 && (
-            <Slide direction="up" in={true} mountOnEnter unmountOnExit>
-              <Fab
-                color="primary"
-                aria-label="filters"
-                onClick={handleToggleFilters}
-                sx={{
-                  position: 'fixed',
-                  bottom: 24,
-                  right: 24,
-                  zIndex: theme.zIndex.speedDial,
-                }}
-              >
-                <Badge 
-                  badgeContent={activeFiltersCount} 
-                  color="secondary"
-                  invisible={activeFiltersCount === 0}
+            {/* Mobile Filters Button - Only show when there are flights */}
+            {allFlights.length > 0 && (
+              <Slide direction="up" in={true} mountOnEnter unmountOnExit>
+                <Fab
+                  color="primary"
+                  aria-label="filters"
+                  onClick={handleToggleFilters}
+                  sx={{
+                    position: 'fixed',
+                    bottom: 24,
+                    right: 24,
+                    zIndex: theme.zIndex.speedDial,
+                  }}
                 >
-                  <FilterList />
-                </Badge>
-              </Fab>
-            </Slide>
-          )}
-
-          {/* Mobile Filters Drawer */}
-          <Drawer
-            anchor="bottom"
-            open={mobileFiltersOpen}
-            onClose={handleCloseFilters}
-            PaperProps={{
-              sx: {
-                maxHeight: '80vh',
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16,
-              },
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                p: 2,
-                borderBottom: 1,
-                borderColor: 'divider',
-                bgcolor: 'background.paper',
-                position: 'sticky',
-                top: 0,
-                zIndex: 1,
-              }}
-            >
-              <Typography variant="h6">
-                Filters
-                {activeFiltersCount > 0 && (
                   <Badge 
                     badgeContent={activeFiltersCount} 
-                    color="primary" 
-                    sx={{ ml: 1 }}
-                  />
-                )}
-              </Typography>
-              <Button
-                startIcon={<Close />}
-                onClick={handleCloseFilters}
-                variant="outlined"
-                size="small"
-              >
-                Close
-              </Button>
-            </Box>
-            
-            <Box sx={{ p: 2, overflow: 'auto' }}>
-              <FiltersPanel isMobile />
-            </Box>
+                    color="secondary"
+                    invisible={activeFiltersCount === 0}
+                  >
+                    <FilterList />
+                  </Badge>
+                </Fab>
+              </Slide>
+            )}
 
-            {/* Apply Filters Button */}
-            <Box
-              sx={{
-                p: 2,
-                borderTop: 1,
-                borderColor: 'divider',
-                bgcolor: 'background.paper',
+            {/* Mobile Filters Drawer */}
+            <Drawer
+              anchor="bottom"
+              open={mobileFiltersOpen}
+              onClose={handleCloseFilters}
+              PaperProps={{
+                sx: {
+                  maxHeight: '80vh',
+                  borderTopLeftRadius: 16,
+                  borderTopRightRadius: 16,
+                },
               }}
             >
-              <Button
-                fullWidth
-                variant="contained"
-                size="large"
-                onClick={handleCloseFilters}
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  p: 2,
+                  borderBottom: 1,
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1,
+                }}
               >
-                Apply Filters
-              </Button>
-            </Box>
-          </Drawer>
-        </Box>
-      )}
-    </Container>
+                <Typography variant="h6">
+                  Filters
+                  {activeFiltersCount > 0 && (
+                    <Badge 
+                      badgeContent={activeFiltersCount} 
+                      color="primary" 
+                      sx={{ ml: 1 }}
+                    />
+                  )}
+                </Typography>
+                <Button
+                  startIcon={<Close />}
+                  onClick={handleCloseFilters}
+                  variant="outlined"
+                  size="small"
+                >
+                  Close
+                </Button>
+              </Box>
+              
+              <Box sx={{ p: 2, overflow: 'auto' }}>
+                <FiltersPanel isMobile />
+              </Box>
+
+              {/* Apply Filters Button */}
+              <Box
+                sx={{
+                  p: 2,
+                  borderTop: 1,
+                  borderColor: 'divider',
+                  bgcolor: 'background.paper',
+                }}
+              >
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  onClick={handleCloseFilters}
+                >
+                  Apply Filters
+                </Button>
+              </Box>
+            </Drawer>
+          </Box>
+        )}
+      </Container>
+    </Box>
   );
 };
