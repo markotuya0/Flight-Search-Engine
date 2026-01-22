@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Chip, Stack } from '@mui/material';
 import { useAppSelector } from '../../../app/hooks';
-import { selectAllFlights, selectFilteredFlights, selectFlightStats, selectStatus, selectFilters } from '../state/selectors';
+import { selectAllFlights, selectFilteredFlights, selectFlightStats, selectStatus, selectFilters, selectPriceSeries } from '../state/selectors';
 
 /**
  * Debug component to show Redux state information
@@ -13,6 +13,7 @@ export const FlightDebugInfo: React.FC = () => {
   const stats = useAppSelector(selectFlightStats);
   const status = useAppSelector(selectStatus);
   const filters = useAppSelector(selectFilters);
+  const priceSeries = useAppSelector(selectPriceSeries);
 
   // Calculate stops distribution
   const stopsDistribution = React.useMemo(() => {
@@ -67,6 +68,10 @@ export const FlightDebugInfo: React.FC = () => {
       
       <Typography variant="caption" display="block">
         Active Filters: Stops: [{filters.stops.join(', ')}], Airlines: [{filters.airlines.join(', ')}], Price: ${filters.price.min}-${filters.price.max}
+      </Typography>
+      
+      <Typography variant="caption" display="block">
+        Price Series: {priceSeries.length} time slots - Hours: [{priceSeries.map(p => p.hour).join(', ')}]
       </Typography>
     </Box>
   );
