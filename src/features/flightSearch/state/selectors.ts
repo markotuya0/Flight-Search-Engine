@@ -20,9 +20,19 @@ export const selectFilteredFlights = createSelector(
   [selectAllFlights, selectFilters],
   (flights: Flight[], filters) => {
     return flights.filter((flight) => {
-      // Filter by stops
-      if (filters.stops.length > 0 && !filters.stops.includes(flight.stops)) {
-        return false;
+      // Filter by stops - only apply if stops are selected
+      if (filters.stops.length > 0) {
+        const matchesStops = filters.stops.some(selectedStops => {
+          if (selectedStops === 2) {
+            // "2+ stops" means 2 or more stops
+            return flight.stops >= 2;
+          }
+          return flight.stops === selectedStops;
+        });
+        
+        if (!matchesStops) {
+          return false;
+        }
       }
 
       // Filter by airlines

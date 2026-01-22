@@ -12,7 +12,7 @@ const initialState: FlightSearchState = {
     adults: 1,
   },
   filters: {
-    stops: [0, 1, 2], // Allow all stop options by default
+    stops: [], // Empty means no filter - show all flights
     airlines: [], // Empty means all airlines allowed
     price: {
       min: 0,
@@ -37,13 +37,43 @@ const flightSearchSlice = createSlice({
     },
     
     resetFilters: (state) => {
-      state.filters = initialState.filters;
+      // Calculate current price range from flights
+      let minPrice = 0;
+      let maxPrice = 2000;
+      
+      if (state.allFlights.length > 0) {
+        const prices = state.allFlights.map(flight => flight.priceTotal);
+        minPrice = Math.min(...prices);
+        maxPrice = Math.max(...prices);
+      }
+      
+      state.filters = {
+        stops: [],
+        airlines: [],
+        price: {
+          min: minPrice,
+          max: maxPrice,
+        },
+      };
     },
     
     setFlights: (state, action: PayloadAction<Flight[]>) => {
       state.allFlights = action.payload;
       state.status = 'succeeded';
       state.error = undefined;
+      
+      // Initialize price range based on actual flight data
+      if (action.payload.length > 0) {
+        const prices = action.payload.map(flight => flight.priceTotal);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+        
+        // Only update if we're still at default values (0, 2000)
+        if (state.filters.price.min === 0 && state.filters.price.max === 2000) {
+          state.filters.price.min = minPrice;
+          state.filters.price.max = maxPrice;
+        }
+      }
     },
     
     setLoading: (state) => {

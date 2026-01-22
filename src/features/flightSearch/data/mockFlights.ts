@@ -110,9 +110,9 @@ export const generateMockFlights = (): Flight[] => {
     const flightsPerRoute = Math.floor(Math.random() * 3) + 2;
     
     for (let i = 0; i < flightsPerRoute; i++) {
-      const stops = Math.random() < 0.6 ? 0 : Math.random() < 0.8 ? 1 : 2;
+      const stops = Math.random() < 0.5 ? 0 : Math.random() < 0.7 ? 1 : Math.random() < 0.9 ? 2 : 3;
       const basePrice = Math.floor(Math.random() * 1500) + 200;
-      const priceMultiplier = stops === 0 ? 1.2 : stops === 1 ? 1.0 : 0.8;
+      const priceMultiplier = stops === 0 ? 1.2 : stops === 1 ? 1.0 : stops === 2 ? 0.8 : 0.7;
       const durationBase = Math.floor(Math.random() * 480) + 120; // 2-10 hours base
       const durationWithStops = durationBase + (stops * 90); // Add 1.5h per stop
       
@@ -121,7 +121,7 @@ export const generateMockFlights = (): Flight[] => {
       
       const selectedAirlines = stops === 0 
         ? [airlines[Math.floor(Math.random() * airlines.length)]]
-        : airlines.slice(0, Math.floor(Math.random() * 2) + 1);
+        : airlines.slice(0, Math.floor(Math.random() * Math.min(stops + 1, 3)) + 1);
 
       flights.push({
         id: `FL${flightId.toString().padStart(4, '0')}`,

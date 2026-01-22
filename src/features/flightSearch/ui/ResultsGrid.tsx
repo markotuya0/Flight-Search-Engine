@@ -17,7 +17,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { FlightTakeoff, AccessTime } from '@mui/icons-material';
 import { useAppSelector } from '../../../app/hooks';
-import { selectAllFlights } from '../state/selectors';
+import { selectFilteredFlights } from '../state/selectors';
 import type { Flight } from '../domain/types';
 
 // Helper function to format duration from minutes to "Xh Ym"
@@ -142,7 +142,7 @@ const FlightCard: React.FC<{ flight: Flight }> = ({ flight }) => {
 export const ResultsGrid: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const flights = useAppSelector(selectAllFlights);
+  const flights = useAppSelector(selectFilteredFlights);
 
   // Transform flights data for DataGrid
   const rows = flights.map((flight: Flight) => ({
