@@ -9,12 +9,16 @@ import {
   Box,
   Alert,
   CircularProgress,
+  IconButton,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   FlightTakeoff,
   FlightLand,
   DateRange,
   Person,
+  SwapHoriz,
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { fetchFlights } from '../state/flightSearchSlice';
@@ -24,6 +28,8 @@ export const SearchForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const status = useAppSelector(selectStatus);
   const error = useAppSelector(selectError);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Form state
   const [formData, setFormData] = useState({
@@ -38,6 +44,15 @@ export const SearchForm: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [field]: event.target.value,
+    }));
+  };
+
+  // Handle swap origin/destination
+  const handleSwap = () => {
+    setFormData(prev => ({
+      ...prev,
+      origin: prev.destination,
+      destination: prev.origin,
     }));
   };
 
@@ -83,96 +98,133 @@ export const SearchForm: React.FC = () => {
           spacing={2}
           alignItems="stretch"
         >
-          <Box sx={{ flex: 1 }}>
-            <TextField
-              fullWidth
-              required
-              label="From"
-              placeholder="JFK, LAX, LHR..."
-              value={formData.origin}
-              onChange={handleChange('origin')}
+          {/* Origin and Destination with Swap Button */}
+          <Box sx={{ 
+            display: 'flex', 
+            flex: { xs: 1, md: 2 }, 
+            gap: 1,
+            alignItems: 'center',
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}>
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <TextField
+                fullWidth
+                required
+                label="From"
+                placeholder="JFK, LAX, LHR..."
+                value={formData.origin}
+                onChange={handleChange('origin')}
+                disabled={isLoading}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FlightTakeoff />
+                    </InputAdornment>
+                  ),
+                }}
+                helperText={isMobile ? "Airport code" : "Enter IATA airport code (e.g., JFK, LAX)"}
+              />
+            </Box>
+            
+            {/* Swap Button */}
+            <IconButton
+              onClick={handleSwap}
               disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FlightTakeoff />
-                  </InputAdornment>
-                ),
+              sx={{ 
+                mx: { xs: 0, sm: 1 },
+                my: { xs: 1, sm: 0 },
+                transform: { xs: 'rotate(90deg)', sm: 'none' },
+                bgcolor: 'action.hover',
+                '&:hover': { bgcolor: 'action.selected' }
               }}
-              helperText="Enter IATA airport code (e.g., JFK, LAX)"
-            />
+              aria-label="Swap origin and destination"
+            >
+              <SwapHoriz />
+            </IconButton>
+            
+            <Box sx={{ flex: 1, width: '100%' }}>
+              <TextField
+                fullWidth
+                required
+                label="To"
+                placeholder="JFK, LAX, LHR..."
+                value={formData.destination}
+                onChange={handleChange('destination')}
+                disabled={isLoading}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FlightLand />
+                    </InputAdornment>
+                  ),
+                }}
+                helperText={isMobile ? "Airport code" : "Enter IATA airport code (e.g., JFK, LAX)"}
+              />
+            </Box>
           </Box>
           
-          <Box sx={{ flex: 1 }}>
-            <TextField
-              fullWidth
-              required
-              label="To"
-              placeholder="JFK, LAX, LHR..."
-              value={formData.destination}
-              onChange={handleChange('destination')}
-              disabled={isLoading}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FlightLand />
-                  </InputAdornment>
-                ),
-              }}
-              helperText="Enter IATA airport code (e.g., JFK, LAX)"
-            />
+          {/* Date and Passengers */}
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 2, 
+            flex: 1,
+            flexDirection: { xs: 'column', sm: 'row' }
+          }}>
+            <Box sx={{ flex: 1 }}>
+              <TextField
+                fullWidth
+                required
+                label="Departure"
+                type="date"
+                value={formData.departDate}
+                onChange={handleChange('departDate')}
+                disabled={isLoading}
+                InputLabelProps={{ shrink: true }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <DateRange />
+                    </InputAdornment>
+                  ),
+                }}
+                inputProps={{
+                  min: new Date().toISOString().split('T')[0], // Today or later
+                }}
+              />
+            </Box>
+            
+            <Box sx={{ minWidth: { xs: '100%', sm: 120 } }}>
+              <TextField
+                fullWidth
+                label="Passengers"
+                type="number"
+                value={formData.adults}
+                onChange={handleChange('adults')}
+                disabled={isLoading}
+                inputProps={{ min: 1, max: 9 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
           </Box>
           
-          <Box sx={{ minWidth: { xs: '100%', md: 150 } }}>
-            <TextField
-              fullWidth
-              required
-              label="Departure"
-              type="date"
-              value={formData.departDate}
-              onChange={handleChange('departDate')}
-              disabled={isLoading}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <DateRange />
-                  </InputAdornment>
-                ),
-              }}
-              inputProps={{
-                min: new Date().toISOString().split('T')[0], // Today or later
-              }}
-            />
-          </Box>
-          
-          <Box sx={{ minWidth: { xs: '100%', md: 120 } }}>
-            <TextField
-              fullWidth
-              label="Passengers"
-              type="number"
-              value={formData.adults}
-              onChange={handleChange('adults')}
-              disabled={isLoading}
-              inputProps={{ min: 1, max: 9 }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Person />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Box>
-          
-          <Box sx={{ minWidth: { xs: '100%', md: 120 } }}>
+          {/* Search Button */}
+          <Box sx={{ minWidth: { xs: '100%', md: 140 } }}>
             <Button
               fullWidth
               variant="contained"
               size="large"
               type="submit"
               disabled={isLoading || !formData.origin || !formData.destination || !formData.departDate}
-              sx={{ height: '56px' }}
+              sx={{ 
+                height: '56px',
+                fontSize: { xs: '1rem', md: '0.875rem' }
+              }}
             >
               {isLoading ? (
                 <CircularProgress size={24} color="inherit" />

@@ -14,7 +14,9 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useAppSelector } from '../../../app/hooks';
-import { selectPriceSeries } from '../state/selectors';
+import { selectPriceSeries, selectStatus, selectAllFlights } from '../state/selectors';
+import { PriceGraphSkeleton, EmptyState } from '../../../shared/components';
+import { TrendingUp } from '@mui/icons-material';
 
 /**
  * Real-time price graph that updates based on filtered flights
@@ -22,6 +24,29 @@ import { selectPriceSeries } from '../state/selectors';
  */
 export const PriceGraph: React.FC = () => {
   const priceSeries = useAppSelector(selectPriceSeries);
+  const status = useAppSelector(selectStatus);
+  const allFlights = useAppSelector(selectAllFlights);
+
+  // Loading state
+  if (status === 'loading') {
+    return <PriceGraphSkeleton />;
+  }
+
+  // No search performed yet
+  if (status === 'idle' || allFlights.length === 0) {
+    return (
+      <Paper elevation={1} sx={{ p: 3, mt: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Price by Departure Time
+        </Typography>
+        <EmptyState
+          title="Price trends will appear here"
+          message="Search for flights to see how prices vary by departure time throughout the day."
+          icon={<TrendingUp sx={{ fontSize: 64, color: 'text.secondary' }} />}
+        />
+      </Paper>
+    );
+  }
 
   // Format hour for display (e.g., 0 -> "12 AM", 13 -> "1 PM")
   const formatHour = (hour: number): string => {
