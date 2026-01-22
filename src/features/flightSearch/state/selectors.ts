@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 import type { RootState } from '../../../app/store';
 import type { Flight } from '../domain/types';
 import { applyFilters } from '../domain/applyFilters';
+import { buildPriceSeries } from '../domain/buildPriceSeries';
 
 // Base selectors
 export const selectFlightSearchState = (state: RootState) => state.flightSearch;
@@ -21,6 +22,14 @@ export const selectFilteredFlights = createSelector(
   [selectAllFlights, selectFilters],
   (flights: Flight[], filters) => {
     return applyFilters(flights, filters);
+  }
+);
+
+// Price series selector - derived from filtered flights
+export const selectPriceSeries = createSelector(
+  [selectFilteredFlights],
+  (filteredFlights) => {
+    return buildPriceSeries(filteredFlights);
   }
 );
 

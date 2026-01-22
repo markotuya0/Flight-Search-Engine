@@ -3,8 +3,6 @@ import {
   Box,
   Paper,
   Typography,
-  ToggleButton,
-  ToggleButtonGroup,
 } from '@mui/material';
 import {
   LineChart,
@@ -14,118 +12,116 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from 'recharts';
+import { useAppSelector } from '../../../app/hooks';
+import { selectPriceSeries } from '../state/selectors';
 
-// Mock price trend data
-const mockPriceData = [
-  { date: 'Jan 15', price: 299, day: 'Mon' },
-  { date: 'Jan 16', price: 279, day: 'Tue' },
-  { date: 'Jan 17', price: 259, day: 'Wed' },
-  { date: 'Jan 18', price: 289, day: 'Thu' },
-  { date: 'Jan 19', price: 349, day: 'Fri' },
-  { date: 'Jan 20', price: 399, day: 'Sat' },
-  { date: 'Jan 21', price: 379, day: 'Sun' },
-];
-
-const mockMonthlyData = [
-  { month: 'Jan', price: 299 },
-  { month: 'Feb', price: 279 },
-  { month: 'Mar', price: 259 },
-  { month: 'Apr', price: 289 },
-  { month: 'May', price: 349 },
-  { month: 'Jun', price: 399 },
-];
-
+/**
+ * Real-time price graph that updates based on filtered flights
+ * Shows minimum price by departure hour
+ */
 export const PriceGraph: React.FC = () => {
-  const [viewType, setViewType] = React.useState<'week' | 'month'>('week');
+  const priceSeries = useAppSelector(selectPriceSeries);
 
-  const handleViewChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newView: 'week' | 'month' | null,
-  ) => {
-    if (newView !== null) {
-      setViewType(newView);
+  // Format hour for display (e.g., 0 -> "12 AM", 13 -> "1 PM")
+  const formatHour = (hour: number): string => {
+    if (hour === 0) return '12 AM';
+    if (hour === 12) return '12 PM';
+    if (hour < 12) return `${hour} AM`;
+    return `${hour - 12} PM`;
+  };
+
+  // Custom tooltip formatter
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const hour = label;
+      const price = payload[0].value;
+      return (
+        <Box sx={{ 
+          bgcolor: 'background.paper', 
+          p: 1.5, 
+          border: 1, 
+          borderColor: 'divider',
+          borderRadius: 1,
+          boxShadow: 2
+        }}>
+          <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+            {formatHour(hour)}
+          </Typography>
+          <Typography variant="body2" color="primary">
+            Min Price: ${price}
+          </Typography>
+        </Box>
+      );
     }
+    return null;
   };
 
   return (
     <Paper elevation={1} sx={{ p: 3, mt: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h6">
-          Price Trends
+          Price by Departure Time
         </Typography>
-        <ToggleButtonGroup
-          value={viewType}
-          exclusive
-          onChange={handleViewChange}
-          size="small"
-        >
-          <ToggleButton value="week">
-            7 Days
-          </ToggleButton>
-          <ToggleButton value="month">
-            6 Months
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <Typography variant="body2" color="text.secondary">
+          {priceSeries.length > 0 ? `${priceSeries.length} time slots` : 'No data'}
+        </Typography>
       </Box>
 
       <Box sx={{ height: 300, width: '100%' }}>
-        <ResponsiveContainer width="100%" height="100%">
-          {viewType === 'week' ? (
-            <LineChart data={mockPriceData}>
+        {priceSeries.length === 0 ? (
+          // Empty state
+          <Box 
+            sx={{ 
+              height: '100%', 
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center', 
+              justifyContent: 'center',
+              color: 'text.secondary'
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              No Price Data Available
+            </Typography>
+            <Typography variant="body2">
+              Adjust your filters to see price trends by departure time
+            </Typography>
+          </Box>
+        ) : (
+          // Chart with data
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={priceSeries} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
-                dataKey="day" 
+                dataKey="hour" 
                 tick={{ fontSize: 12 }}
+                tickFormatter={formatHour}
+                domain={['dataMin', 'dataMax']}
               />
               <YAxis 
                 tick={{ fontSize: 12 }}
                 tickFormatter={(value) => `$${value}`}
+                domain={['dataMin - 50', 'dataMax + 50']}
               />
-              <Tooltip 
-                formatter={(value: number | undefined) => value ? [`$${value}`, 'Price'] : ['', '']}
-                labelFormatter={(label) => `Day: ${label}`}
-              />
+              <Tooltip content={<CustomTooltip />} />
               <Line 
                 type="monotone" 
-                dataKey="price" 
+                dataKey="minPrice" 
                 stroke="#1976d2" 
                 strokeWidth={3}
                 dot={{ fill: '#1976d2', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 6, stroke: '#1976d2', strokeWidth: 2 }}
               />
             </LineChart>
-          ) : (
-            <BarChart data={mockMonthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="month" 
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis 
-                tick={{ fontSize: 12 }}
-                tickFormatter={(value) => `$${value}`}
-              />
-              <Tooltip 
-                formatter={(value: number | undefined) => value ? [`$${value}`, 'Average Price'] : ['', '']}
-                labelFormatter={(label) => `Month: ${label}`}
-              />
-              <Bar 
-                dataKey="price" 
-                fill="#1976d2"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          )}
-        </ResponsiveContainer>
+          </ResponsiveContainer>
+        )}
       </Box>
 
       <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-        {viewType === 'week' 
-          ? 'Prices for the next 7 days. Best deals typically on Tuesday and Wednesday.'
-          : 'Average monthly prices. Book 2-3 months in advance for best deals.'
+        {priceSeries.length > 0 
+          ? 'Shows minimum price for each departure hour from filtered results. Early morning and late evening flights are often cheaper.'
+          : 'This graph will show price trends by departure time when flights match your filters.'
         }
       </Typography>
     </Paper>
