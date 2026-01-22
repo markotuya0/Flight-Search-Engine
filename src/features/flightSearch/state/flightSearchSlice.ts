@@ -36,6 +36,7 @@ const initialState: FlightSearchState = {
       max: 2000,
     },
   },
+  sortBy: 'best', // Default sort
   allFlights: [],
   status: 'idle',
   error: undefined,
@@ -51,6 +52,10 @@ const flightSearchSlice = createSlice({
     
     setFilters: (state, action: PayloadAction<Partial<Filters>>) => {
       state.filters = { ...state.filters, ...action.payload };
+    },
+    
+    setSortBy: (state, action: PayloadAction<'best' | 'cheapest' | 'fastest'>) => {
+      state.sortBy = action.payload;
     },
     
     resetFilters: (state) => {
@@ -147,6 +152,7 @@ const flightSearchSlice = createSlice({
 export const {
   setSearchParams,
   setFilters,
+  setSortBy,
   resetFilters,
   setFlights,
   setLoading,

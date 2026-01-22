@@ -17,7 +17,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { FlightTakeoff, AccessTime } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { selectFilteredFlights, selectStatus, selectError, selectSearchParams, selectAllFlights } from '../state/selectors';
+import { selectSortedFilteredFlights, selectStatus, selectError, selectSearchParams, selectAllFlights } from '../state/selectors';
 import { fetchFlights } from '../state/flightSearchSlice';
 import { FlightGridSkeleton, ErrorState, EmptyState, WelcomeState } from '../../../shared/components';
 import type { Flight } from '../domain/types';
@@ -146,7 +146,7 @@ export const ResultsGrid: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
-  const flights = useAppSelector(selectFilteredFlights);
+  const flights = useAppSelector(selectSortedFilteredFlights);
   const allFlights = useAppSelector(selectAllFlights);
   const status = useAppSelector(selectStatus);
   const error = useAppSelector(selectError);

@@ -44,6 +44,7 @@ export type LoadingStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
 export interface FlightSearchState {
   searchParams: SearchParams;
   filters: Filters;
+  sortBy: 'best' | 'cheapest' | 'fastest';
   allFlights: Flight[];
   status: LoadingStatus;
   error?: string;

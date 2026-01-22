@@ -9,6 +9,7 @@ export const selectFlightSearchState = (state: RootState) => state.flightSearch;
 
 export const selectSearchParams = (state: RootState) => state.flightSearch.searchParams;
 export const selectFilters = (state: RootState) => state.flightSearch.filters;
+export const selectSortBy = (state: RootState) => state.flightSearch.sortBy;
 export const selectAllFlights = (state: RootState) => state.flightSearch.allFlights;
 export const selectStatus = (state: RootState) => state.flightSearch.status;
 export const selectError = (state: RootState) => state.flightSearch.error;
@@ -25,9 +26,32 @@ export const selectFilteredFlights = createSelector(
   }
 );
 
-// Price series selector - derived from filtered flights
+// Sorted and filtered flights selector
+export const selectSortedFilteredFlights = createSelector(
+  [selectFilteredFlights, selectSortBy],
+  (flights: Flight[], sortBy) => {
+    const sortedFlights = [...flights];
+    
+    switch (sortBy) {
+      case 'cheapest':
+        return sortedFlights.sort((a, b) => a.priceTotal - b.priceTotal);
+      case 'fastest':
+        return sortedFlights.sort((a, b) => a.durationMinutes - b.durationMinutes);
+      case 'best':
+      default:
+        // Best = combination of price and duration (simple scoring)
+        return sortedFlights.sort((a, b) => {
+          const scoreA = (a.priceTotal / 1000) + (a.durationMinutes / 60) + (a.stops * 2);
+          const scoreB = (b.priceTotal / 1000) + (b.durationMinutes / 60) + (b.stops * 2);
+          return scoreA - scoreB;
+        });
+    }
+  }
+);
+
+// Price series selector - derived from sorted filtered flights
 export const selectPriceSeries = createSelector(
-  [selectFilteredFlights],
+  [selectSortedFilteredFlights],
   (filteredFlights) => {
     return buildPriceSeries(filteredFlights);
   }
@@ -35,7 +59,7 @@ export const selectPriceSeries = createSelector(
 
 // Flight statistics selectors
 export const selectFlightStats = createSelector(
-  [selectFilteredFlights],
+  [selectSortedFilteredFlights],
   (flights) => {
     if (flights.length === 0) {
       return {

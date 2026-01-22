@@ -21,18 +21,23 @@ import { FiltersPanel } from './FiltersPanel';
 import { ResultsGrid } from './ResultsGrid';
 import { PriceGraph } from './PriceGraph';
 import { FlightDebugInfo } from './FlightDebugInfo';
-import { useAppSelector } from '../../../app/hooks';
-import { selectFilters, selectAllFlights } from '../state/selectors';
+import { AppliedFiltersBar } from './AppliedFiltersBar';
+import { SortControls } from './SortControls';
+import { useAppSelector, useAppDispatch } from '../../../app/hooks';
+import { selectFilters, selectAllFlights, selectSortBy } from '../state/selectors';
+import { setSortBy } from '../state/flightSearchSlice';
 
 const DRAWER_WIDTH = 320;
 
 export const FlightSearchPage: React.FC = () => {
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
   
   const filters = useAppSelector(selectFilters);
   const allFlights = useAppSelector(selectAllFlights);
+  const sortBy = useAppSelector(selectSortBy);
 
   // Calculate active filter count for mobile badge
   const activeFiltersCount = React.useMemo(() => {
@@ -65,6 +70,10 @@ export const FlightSearchPage: React.FC = () => {
     setMobileFiltersOpen(false);
   };
 
+  const handleSortChange = (newSort: 'best' | 'cheapest' | 'fastest') => {
+    dispatch(setSortBy(newSort));
+  };
+
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: 'calc(100vh - 56px)' }}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -72,7 +81,10 @@ export const FlightSearchPage: React.FC = () => {
         <SearchForm />
         
         {/* Debug Info - Development only */}
-        <FlightDebugInfo />
+        {import.meta.env.DEV && <FlightDebugInfo />}
+
+        {/* Applied Filters Bar */}
+        <AppliedFiltersBar />
 
         {/* Desktop Layout */}
         {!isMobile ? (
@@ -90,6 +102,11 @@ export const FlightSearchPage: React.FC = () => {
             {/* Main Content - Right Column */}
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Stack spacing={3}>
+                <SortControls 
+                  value={sortBy} 
+                  onChange={handleSortChange}
+                  resultsCount={allFlights.length}
+                />
                 <ResultsGrid />
                 <PriceGraph />
               </Stack>
@@ -100,6 +117,11 @@ export const FlightSearchPage: React.FC = () => {
           <Box sx={{ position: 'relative', mt: 2 }}>
             {/* Main Content - Full Width on Mobile */}
             <Stack spacing={3}>
+              <SortControls 
+                value={sortBy} 
+                onChange={handleSortChange}
+                resultsCount={allFlights.length}
+              />
               <ResultsGrid />
               <PriceGraph />
             </Stack>
