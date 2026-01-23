@@ -12,6 +12,7 @@ export const selectFilters = (state: RootState) => state.flightSearch.filters;
 export const selectAllFlights = (state: RootState) => state.flightSearch.allFlights;
 export const selectStatus = (state: RootState) => state.flightSearch.status;
 export const selectError = (state: RootState) => state.flightSearch.error;
+export const selectUsedFallback = (state: RootState) => state.flightSearch.usedFallback;
 
 // Computed selectors
 export const selectIsLoading = (state: RootState) => state.flightSearch.status === 'loading';

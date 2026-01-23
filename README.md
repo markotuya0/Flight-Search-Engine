@@ -1,73 +1,174 @@
-# React + TypeScript + Vite
+# Flight Search Engine
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern flight search application built with React, TypeScript, and Vite. Features intelligent fallback between Amadeus and Duffel APIs for reliable flight data.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Smart API Fallback**: Amadeus primary, Duffel fallback for reliability
+- **Real-time Search**: Fast flight search with live filtering and sorting
+- **Modern UI**: Clean, responsive interface with Material-UI components
+- **Price Visualization**: Interactive price graphs and trend analysis
+- **Advanced Filtering**: Filter by price, stops, airlines, and more
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React 19, TypeScript, Material-UI
+- **State Management**: Redux Toolkit
+- **Build Tool**: Vite
+- **API Integration**: Amadeus + Duffel (serverless fallback)
+- **Deployment**: Vercel
 
-## Expanding the ESLint configuration
+## 📋 Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js 18+ 
+- npm or yarn
+- Amadeus API credentials ([Get them here](https://developers.amadeus.com/))
+- Duffel API credentials ([Get them here](https://duffel.com/))
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🔧 Environment Setup
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. **Clone and install dependencies:**
+   ```bash
+   git clone <repository-url>
+   cd flight-search-engine
+   npm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. **Set up environment variables:**
+   
+   Copy `.env.example` to `.env.local` and fill in your API credentials:
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Required variables in `.env.local`:
+   ```bash
+   # Amadeus API (Primary Provider)
+   VITE_AMADEUS_CLIENT_ID=your_amadeus_client_id
+   VITE_AMADEUS_CLIENT_SECRET=your_amadeus_client_secret
+   
+   # Duffel API (Fallback Provider)
+   DUFFEL_ACCESS_TOKEN=your_duffel_test_token
+   ```
+
+## 🚀 Development
+
+**Important**: Use Vercel dev server for full functionality (required for API fallback):
+
+```bash
+# Install Vercel CLI (if not already installed)
+npm i -g vercel
+
+# Start development server with serverless functions
+vercel dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app will be available at `http://localhost:3000`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Alternative** (limited functionality - no fallback):
+```bash
+npm run dev  # Only use for UI development
 ```
+
+## 🔄 Fallback Strategy
+
+The application implements intelligent API fallback:
+
+1. **Primary**: Amadeus API (industry standard)
+2. **Fallback**: Duffel API (when Amadeus fails)
+3. **Triggers**: Error 141, 5xx server errors
+4. **User Experience**: Seamless with clear notification
+
+### How It Works
+
+```
+User Search Request
+       ↓
+1. Try Amadeus (Primary)
+       ↓
+   Success? → Display Results
+       ↓
+   Failure (141/5xx)? → Try Duffel (Fallback)
+       ↓
+   Success? → Display Results + Info Banner
+       ↓
+   Both Fail? → Show Error Message
+```
+
+## 🧪 Testing
+
+### Manual Testing Scenarios
+
+1. **Normal Flow**: Search JFK → LAX (future date)
+   - Should show Amadeus results (if working) or Duffel fallback
+   
+2. **Fallback Flow**: 
+   - Amadeus typically fails with error 141 in test environment
+   - Duffel automatically activates
+   - Blue info banner appears: "Amadeus test environment is unavailable..."
+
+3. **UI Functionality**:
+   - Filters work with both providers
+   - Sorting functions correctly  
+   - Price graph displays properly
+   - All existing features preserved
+
+## 📦 Production Deployment
+
+### Vercel Deployment
+
+1. **Set environment variables in Vercel Dashboard:**
+   ```
+   Project → Settings → Environment Variables
+   
+   DUFFEL_ACCESS_TOKEN = your_duffel_token
+   VITE_AMADEUS_CLIENT_ID = your_amadeus_id  
+   VITE_AMADEUS_CLIENT_SECRET = your_amadeus_secret
+   ```
+
+2. **Deploy:**
+   ```bash
+   vercel --prod
+   ```
+
+### Build Locally
+```bash
+npm run build
+npm run preview
+```
+
+## 🔒 Security
+
+- ✅ No API keys committed to repository
+- ✅ Environment variables for all credentials  
+- ✅ Server-side API calls (no CORS issues)
+- ✅ `.env.local` properly gitignored
+
+## 🏗️ Architecture
+
+```
+src/
+├── features/flightSearch/
+│   ├── api/           # API integrations
+│   ├── domain/        # Business logic & types
+│   ├── state/         # Redux state management
+│   └── ui/            # React components
+├── shared/            # Shared utilities
+└── app/               # App configuration
+
+api/
+└── duffel/
+    └── search.ts      # Serverless fallback function
+```
+
+## 🤝 Contributing
+
+1. Create feature branch: `git checkout -b feat/your-feature`
+2. Make changes and test locally with `vercel dev`
+3. Commit: `git commit -m "feat: description"`
+4. Push: `git push origin feat/your-feature`
+5. Create Pull Request
+
+## 📄 License
+
+MIT License - see LICENSE file for details
