@@ -12,6 +12,14 @@ declare module '@mui/material/styles' {
       danger?: string;
     };
   }
+
+  interface Components {
+    MuiDataGrid?: {
+      styleOverrides?: {
+        root?: any;
+      };
+    };
+  }
 }
 
 // Modern flight search theme inspired by travel booking sites
