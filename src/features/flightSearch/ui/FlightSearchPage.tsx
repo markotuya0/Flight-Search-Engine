@@ -11,6 +11,7 @@ import {
   Stack,
   Typography,
   Slide,
+  Alert,
 } from '@mui/material';
 import {
   FilterList,
@@ -22,7 +23,7 @@ import { ResultsGrid } from './ResultsGrid';
 import { PriceGraph } from './PriceGraph';
 import { FlightDebugInfo } from './FlightDebugInfo';
 import { useAppSelector } from '../../../app/hooks';
-import { selectFilters, selectAllFlights } from '../state/selectors';
+import { selectFilters, selectAllFlights, selectUsedFallback } from '../state/selectors';
 
 const DRAWER_WIDTH = 320;
 
@@ -33,6 +34,7 @@ export const FlightSearchPage: React.FC = () => {
   
   const filters = useAppSelector(selectFilters);
   const allFlights = useAppSelector(selectAllFlights);
+  const usedFallback = useAppSelector(selectUsedFallback);
 
   // Calculate active filter count for mobile badge
   const activeFiltersCount = React.useMemo(() => {
@@ -90,6 +92,21 @@ export const FlightSearchPage: React.FC = () => {
             {/* Main Content - Right Column */}
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Stack spacing={3}>
+                {/* Fallback Notification */}
+                {usedFallback && (
+                  <Alert 
+                    severity="info" 
+                    sx={{ 
+                      borderRadius: 2,
+                      '& .MuiAlert-message': {
+                        fontSize: '0.875rem',
+                      }
+                    }}
+                  >
+                    Amadeus test environment is unavailable. Showing results from fallback provider.
+                  </Alert>
+                )}
+                
                 <ResultsGrid />
                 <PriceGraph />
               </Stack>
@@ -100,6 +117,21 @@ export const FlightSearchPage: React.FC = () => {
           <Box sx={{ position: 'relative', mt: 2 }}>
             {/* Main Content - Full Width on Mobile */}
             <Stack spacing={3}>
+              {/* Fallback Notification */}
+              {usedFallback && (
+                <Alert 
+                  severity="info" 
+                  sx={{ 
+                    borderRadius: 2,
+                    '& .MuiAlert-message': {
+                      fontSize: '0.875rem',
+                    }
+                  }}
+                >
+                  Amadeus test environment is unavailable. Showing results from fallback provider.
+                </Alert>
+              )}
+              
               <ResultsGrid />
               <PriceGraph />
             </Stack>

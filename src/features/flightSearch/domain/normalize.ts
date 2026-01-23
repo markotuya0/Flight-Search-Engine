@@ -1,6 +1,50 @@
 import type { Flight, Airport } from './types';
 import type { AmadeusFlightOffer, AmadeusFlightSearchResponse } from '../api/searchFlights';
 
+// Duffel offer interface for normalization
+interface DuffelOffer {
+  id: string;
+  live_mode: boolean;
+  total_amount: string;
+  total_currency: string;
+  slices: Array<{
+    id: string;
+    segments: Array<{
+      id: string;
+      origin: {
+        id: string;
+        iata_code: string;
+        name: string;
+        city_name?: string;
+      };
+      destination: {
+        id: string;
+        iata_code: string;
+        name: string;
+        city_name?: string;
+      };
+      departing_at: string;
+      arriving_at: string;
+      marketing_carrier: {
+        id: string;
+        iata_code: string;
+        name: string;
+      };
+      operating_carrier: {
+        id: string;
+        iata_code: string;
+        name: string;
+      };
+      duration: string;
+    }>;
+    duration: string;
+  }>;
+  passengers: Array<{
+    id: string;
+    type: string;
+  }>;
+}
+
 /**
  * Convert Amadeus flight offer to our internal Flight type
  */
@@ -100,4 +144,104 @@ const getLocationName = (
     return location.name || location.cityName || code;
   }
   return code;
+};
+
+/**
+ * Convert Duffel offer to our internal Flight type
+ */
+export const normalizeDuffelOffer = (offer: DuffelOffer): Flight | null => {
+  try {
+    // Get the outbound slice (first slice)
+    const outboundSlice = offer.slices[0];
+    if (!outboundSlice || !outboundSlice.segments || outboundSlice.segments.length === 0) {
+      console.warn(`Duffel offer ${offer.id} missing outbound slice or segments`);
+      return null;
+    }
+
+    const firstSegment = outboundSlice.segments[0];
+    const lastSegment = outboundSlice.segments[outboundSlice.segments.length - 1];
+
+    // Validate required fields
+    if (!firstSegment.origin?.iata_code || !lastSegment.destination?.iata_code) {
+      console.warn(`Duffel offer ${offer.id} missing required airport codes`);
+      return null;
+    }
+
+    if (!firstSegment.departing_at || !lastSegment.arriving_at) {
+      console.warn(`Duffel offer ${offer.id} missing required timestamps`);
+      return null;
+    }
+
+    if (!offer.total_amount || !offer.total_currency) {
+      console.warn(`Duffel offer ${offer.id} missing price information`);
+      return null;
+    }
+
+    // Calculate stops (segments - 1)
+    const stops = Math.max(0, outboundSlice.segments.length - 1);
+
+    // Get unique airline codes from all segments
+    const airlineCodes = [...new Set(
+      outboundSlice.segments
+        .map(segment => segment.marketing_carrier?.iata_code || segment.operating_carrier?.iata_code)
+        .filter(Boolean)
+    )];
+
+    // Calculate duration in minutes
+    const departTime = new Date(firstSegment.departing_at);
+    const arriveTime = new Date(lastSegment.arriving_at);
+    const durationMinutes = Math.round((arriveTime.getTime() - departTime.getTime()) / (1000 * 60));
+
+    // Create airport objects
+    const origin: Airport = {
+      code: firstSegment.origin.iata_code,
+      name: firstSegment.origin.name || firstSegment.origin.iata_code,
+      city: firstSegment.origin.city_name || firstSegment.origin.name || firstSegment.origin.iata_code,
+      country: 'Unknown', // Duffel doesn't always provide country in basic response
+    };
+
+    const destination: Airport = {
+      code: lastSegment.destination.iata_code,
+      name: lastSegment.destination.name || lastSegment.destination.iata_code,
+      city: lastSegment.destination.city_name || lastSegment.destination.name || lastSegment.destination.iata_code,
+      country: 'Unknown',
+    };
+
+    const flight: Flight = {
+      id: offer.id,
+      priceTotal: Math.round(parseFloat(offer.total_amount) || 0),
+      currency: offer.total_currency,
+      airlineCodes,
+      stops,
+      durationMinutes,
+      departAt: firstSegment.departing_at,
+      arriveAt: lastSegment.arriving_at,
+      origin,
+      destination,
+    };
+
+    return flight;
+  } catch (error) {
+    console.error(`Error normalizing Duffel offer ${offer.id}:`, error);
+    return null;
+  }
+};
+
+/**
+ * Convert Duffel offers array to our internal Flight array
+ */
+export const normalizeDuffelOffers = (offers: DuffelOffer[]): Flight[] => {
+  const flights = offers
+    .map(offer => normalizeDuffelOffer(offer))
+    .filter((flight): flight is Flight => flight !== null);
+  
+  // Debug: Log price range
+  if (flights.length > 0) {
+    const prices = flights.map(f => f.priceTotal);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    console.log(`Normalized ${flights.length} Duffel flights. Price range: ${minPrice} - ${maxPrice}`);
+  }
+  
+  return flights;
 };

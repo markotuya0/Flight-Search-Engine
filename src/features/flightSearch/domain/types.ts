@@ -47,4 +47,5 @@ export interface FlightSearchState {
   allFlights: Flight[];
   status: LoadingStatus;
   error?: string;
+  usedFallback?: boolean; // Track if last search used Duffel fallback
 }

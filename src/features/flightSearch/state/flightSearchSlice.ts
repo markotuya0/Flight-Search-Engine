@@ -2,19 +2,89 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { FlightSearchState, SearchParams, Filters, Flight } from '../domain/types';
 import { searchFlights } from '../api/searchFlights';
-import { normalizeAmadeusResponse } from '../domain/normalize';
+import { duffelSearchFlights } from '../api/duffelSearchFlights';
+import { normalizeAmadeusResponse, normalizeDuffelOffers } from '../domain/normalize';
 
-// Async thunk for fetching flights from Amadeus API
+/**
+ * Check if an error should trigger Duffel fallback
+ */
+const shouldUseFallback = (error: any): boolean => {
+  // Check for HTTP not ok responses
+  if (error?.response && !error.response.ok) {
+    const status = error.response.status;
+    
+    // Check for 5xx server errors
+    if (status >= 500 && status < 600) {
+      console.log(`Amadeus 5xx error (${status}), triggering fallback`);
+      return true;
+    }
+  }
+
+  // Check for Amadeus error code 141
+  if (error?.response?.data?.errors) {
+    const hasError141 = error.response.data.errors.some((err: any) => err.code === "141");
+    if (hasError141) {
+      console.log('Amadeus error 141 detected, triggering fallback');
+      return true;
+    }
+  }
+
+  // Check error message for common patterns
+  const errorMessage = error?.message || '';
+  if (errorMessage.includes('141') || errorMessage.includes('5')) {
+    console.log('Error message suggests fallback condition:', errorMessage);
+    return true;
+  }
+
+  return false;
+};
+
+// Async thunk for fetching flights with fallback support
 export const fetchFlights = createAsyncThunk(
   'flightSearch/fetchFlights',
   async (searchParams: SearchParams, { rejectWithValue }) => {
+    console.log('Starting flight search with params:', searchParams);
+    
     try {
-      const response = await searchFlights(searchParams);
-      const flights = normalizeAmadeusResponse(response);
-      return { flights, searchParams };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to fetch flights';
-      return rejectWithValue(message);
+      // Try Amadeus first (primary provider)
+      console.log('Attempting Amadeus search...');
+      const amadeusResponse = await searchFlights(searchParams);
+      const flights = normalizeAmadeusResponse(amadeusResponse);
+      
+      console.log(`Amadeus search successful: ${flights.length} flights found`);
+      return { 
+        flights, 
+        searchParams, 
+        usedFallback: false 
+      };
+    } catch (amadeusError) {
+      console.error('Amadeus search failed:', amadeusError);
+      
+      // Check if we should try Duffel fallback
+      if (shouldUseFallback(amadeusError)) {
+        try {
+          console.log('Attempting Duffel fallback...');
+          const duffelOffers = await duffelSearchFlights(searchParams);
+          const flights = normalizeDuffelOffers(duffelOffers);
+          
+          console.log(`Duffel fallback successful: ${flights.length} flights found`);
+          return { 
+            flights, 
+            searchParams, 
+            usedFallback: true 
+          };
+        } catch (duffelError) {
+          console.error('Duffel fallback also failed:', duffelError);
+          
+          // Both providers failed
+          const combinedMessage = 'Flight search unavailable (Amadeus + fallback failed). Please try again.';
+          return rejectWithValue(combinedMessage);
+        }
+      } else {
+        // Don't use fallback for other types of errors
+        const message = amadeusError instanceof Error ? amadeusError.message : 'Amadeus search failed';
+        return rejectWithValue(message);
+      }
     }
   }
 );
@@ -39,6 +109,7 @@ const initialState: FlightSearchState = {
   allFlights: [],
   status: 'idle',
   error: undefined,
+  usedFallback: false,
 };
 
 const flightSearchSlice = createSlice({
@@ -78,6 +149,7 @@ const flightSearchSlice = createSlice({
       state.allFlights = action.payload;
       state.status = 'succeeded';
       state.error = undefined;
+      state.usedFallback = false; // Reset fallback flag when manually setting flights
       
       // Initialize price range based on actual flight data
       if (action.payload.length > 0) {
@@ -96,6 +168,7 @@ const flightSearchSlice = createSlice({
     setLoading: (state) => {
       state.status = 'loading';
       state.error = undefined;
+      state.usedFallback = false; // Reset fallback flag when starting new search
     },
     
     setError: (state, action: PayloadAction<string>) => {
@@ -112,12 +185,14 @@ const flightSearchSlice = createSlice({
       .addCase(fetchFlights.pending, (state) => {
         state.status = 'loading';
         state.error = undefined;
+        state.usedFallback = false; // Reset fallback flag when starting new search
       })
       .addCase(fetchFlights.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.error = undefined;
         state.allFlights = action.payload.flights;
         state.searchParams = { ...state.searchParams, ...action.payload.searchParams };
+        state.usedFallback = action.payload.usedFallback || false;
         
         // Initialize price range based on actual flight data
         if (action.payload.flights.length > 0) {
@@ -140,6 +215,7 @@ const flightSearchSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload as string;
         state.allFlights = [];
+        state.usedFallback = false;
       });
   },
 });
