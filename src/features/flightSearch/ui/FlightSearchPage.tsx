@@ -21,7 +21,6 @@ import { SearchForm } from './SearchForm';
 import { FiltersPanel } from './FiltersPanel';
 import { ResultsGrid } from './ResultsGrid';
 import { PriceGraph } from './PriceGraph';
-import { FlightDebugInfo } from './FlightDebugInfo';
 import { useAppSelector } from '../../../app/hooks';
 import { selectFilters, selectAllFlights, selectUsedFallback } from '../state/selectors';
 
@@ -72,9 +71,6 @@ export const FlightSearchPage: React.FC = () => {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Modern Search Form Card */}
         <SearchForm />
-        
-        {/* Debug Info - Development only */}
-        <FlightDebugInfo />
 
         {/* Desktop Layout */}
         {!isMobile ? (

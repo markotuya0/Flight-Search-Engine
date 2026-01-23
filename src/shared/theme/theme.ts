@@ -12,7 +12,6 @@ declare module '@mui/material/styles' {
       danger?: string;
     };
   }
-  
   interface Components {
     MuiDataGrid?: {
       styleOverrides?: any;
