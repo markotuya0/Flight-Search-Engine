@@ -250,128 +250,386 @@ export const ResultsGrid: React.FC = () => {
   // Desktop Table View
   if (!isMobile) {
     return (
-      <Paper elevation={0}>
-        <Box sx={{ p: 3, borderBottom: '1px solid #f1f5f9' }}>
-          <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
-            Flight Results ({flights.length} flights found)
-          </Typography>
-        </Box>
+      <>
+        <Paper elevation={0}>
+          <Box sx={{ p: 3, borderBottom: '1px solid #f1f5f9' }}>
+            <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>
+              Flight Results ({flights.length} flights found)
+            </Typography>
+          </Box>
 
-        <StyledTableContainer>
-          <Table>
-            <StyledTableHead>
-              <TableRow>
-                <TableCell>Airline</TableCell>
-                <TableCell>Route</TableCell>
-                <TableCell>Departure</TableCell>
-                <TableCell>Arrival</TableCell>
-                <TableCell>Stops</TableCell>
-                <TableCell>Duration</TableCell>
-                <TableCell>Price</TableCell>
-                <TableCell align="right"></TableCell>
-              </TableRow>
-            </StyledTableHead>
-            <TableBody>
-              {paginatedFlights.map((flight) => {
-                const airlineColor = getAirlineColor(flight.airlineCodes[0]);
-                return (
-                  <StyledTableRow key={flight.id}>
-                    <TableCell>
-                      <Stack direction="row" spacing={1.5} alignItems="center">
-                        <AirlineIcon bgcolor={airlineColor}>
-                          <FlightTakeoff sx={{ color: '#ffffff', fontSize: 20 }} />
-                        </AirlineIcon>
+          <StyledTableContainer>
+            <Table>
+              <StyledTableHead>
+                <TableRow>
+                  <TableCell>Airline</TableCell>
+                  <TableCell>Route</TableCell>
+                  <TableCell>Departure</TableCell>
+                  <TableCell>Arrival</TableCell>
+                  <TableCell>Stops</TableCell>
+                  <TableCell>Duration</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell align="right"></TableCell>
+                </TableRow>
+              </StyledTableHead>
+              <TableBody>
+                {paginatedFlights.map((flight) => {
+                  const airlineColor = getAirlineColor(flight.airlineCodes[0]);
+                  return (
+                    <StyledTableRow key={flight.id}>
+                      <TableCell>
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          <AirlineIcon bgcolor={airlineColor}>
+                            <FlightTakeoff sx={{ color: '#ffffff', fontSize: 20 }} />
+                          </AirlineIcon>
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
+                              {flight.airlineCodes[0]}
+                            </Typography>
+                            <Typography variant="caption" sx={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                              23kg
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.875rem', color: '#475569' }}>
+                          {flight.origin.code} → {flight.destination.code}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
+                          {formatDate(flight.departAt)}, {formatTime(flight.departAt)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
+                          {formatDate(flight.arriveAt)}, {formatTime(flight.arriveAt)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={getStopsDisplay(flight.stops)}
+                          size="small"
+                          sx={{
+                            height: 24,
+                            fontSize: '0.75rem',
+                            fontWeight: 500,
+                            backgroundColor: flight.stops === 0 ? '#d1fae5' : '#f1f5f9',
+                            color: flight.stops === 0 ? '#065f46' : '#64748b',
+                            border: 'none',
+                            borderRadius: '6px',
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                          <AccessTime sx={{ fontSize: 16, color: '#94a3b8' }} />
+                          <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#475569' }}>
+                            {formatDuration(flight.durationMinutes)}
+                          </Typography>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
                         <Box>
-                          <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
-                            {flight.airlineCodes[0]}
+                          <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.125rem', color: '#f97316' }}>
+                            {formatPrice(flight.priceTotal)}
                           </Typography>
                           <Typography variant="caption" sx={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                            23kg
+                            / pax
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right">
+                        <ChooseButton variant="outlined" onClick={() => handleFlightSelect(flight)}>
+                          Choose
+                        </ChooseButton>
+                      </TableCell>
+                    </StyledTableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </StyledTableContainer>
+
+          <TablePagination
+            component="div"
+            count={flights.length}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            sx={{
+              borderTop: '1px solid #f1f5f9',
+              '& .MuiTablePagination-toolbar': {
+                paddingLeft: 3,
+                paddingRight: 3,
+              },
+              '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                fontSize: '0.875rem',
+                color: '#64748b',
+              },
+            }}
+          />
+        </Paper>
+
+        {/* Desktop Drawer */}
+        <Drawer
+          anchor="right"
+          open={drawerOpen}
+          onClose={handleDrawerClose}
+          PaperProps={{
+            sx: {
+              width: { xs: '100%', sm: 480 },
+              maxWidth: '100%',
+            },
+          }}
+        >
+          {selectedFlight && (
+            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              {/* Drawer Header */}
+              <Box sx={{ 
+                p: 3, 
+                borderBottom: '1px solid #e2e8f0',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a' }}>
+                  Flight Details
+                </Typography>
+                <IconButton onClick={handleDrawerClose} size="small">
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+
+              {/* Drawer Content */}
+              <Box sx={{ flex: 1, overflow: 'auto', p: 3 }}>
+                <Stack spacing={3}>
+                  {/* Airline Info */}
+                  <Box>
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                      <AirlineIcon bgcolor={getAirlineColor(selectedFlight.airlineCodes[0])}>
+                        <FlightTakeoff sx={{ color: '#ffffff', fontSize: 24 }} />
+                      </AirlineIcon>
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a' }}>
+                          {selectedFlight.airlineCodes.join(', ')}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#64748b' }}>
+                          Flight {selectedFlight.id.slice(0, 8)}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Box>
+
+                  <Divider />
+
+                  {/* Flight Route */}
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#64748b', mb: 2, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                      Flight Route
+                    </Typography>
+                    <Stack spacing={3}>
+                      {/* Departure */}
+                      <Stack direction="row" spacing={2}>
+                        <Box sx={{ 
+                          width: 40, 
+                          height: 40, 
+                          borderRadius: '50%', 
+                          bgcolor: '#f0fdfa', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}>
+                          <FlightTakeoff sx={{ color: '#14b8a6', fontSize: 20 }} />
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ color: '#64748b', fontSize: '0.75rem', mb: 0.5 }}>
+                            Departure
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a', mb: 0.5 }}>
+                            {formatTime(selectedFlight.departAt)}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#475569' }}>
+                            {selectedFlight.origin.code} - {selectedFlight.origin.name || selectedFlight.origin.code}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+                            {formatDate(selectedFlight.departAt)}
                           </Typography>
                         </Box>
                       </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.875rem', color: '#475569' }}>
-                        {flight.origin.code} → {flight.destination.code}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
-                        {formatDate(flight.departAt)}, {formatTime(flight.departAt)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
-                        {formatDate(flight.arriveAt)}, {formatTime(flight.arriveAt)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={getStopsDisplay(flight.stops)}
-                        size="small"
-                        sx={{
-                          height: 24,
-                          fontSize: '0.75rem',
-                          fontWeight: 500,
-                          backgroundColor: flight.stops === 0 ? '#d1fae5' : '#f1f5f9',
-                          color: flight.stops === 0 ? '#065f46' : '#64748b',
-                          border: 'none',
-                          borderRadius: '6px',
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={0.5} alignItems="center">
-                        <AccessTime sx={{ fontSize: 16, color: '#94a3b8' }} />
-                        <Typography variant="body2" sx={{ fontSize: '0.875rem', color: '#475569' }}>
-                          {formatDuration(flight.durationMinutes)}
+
+                      {/* Duration */}
+                      <Box sx={{ pl: 2.5, borderLeft: '2px dashed #e2e8f0', ml: 2.5 }}>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <AccessTime sx={{ fontSize: 16, color: '#94a3b8' }} />
+                          <Typography variant="body2" sx={{ color: '#64748b' }}>
+                            {formatDuration(selectedFlight.durationMinutes)}
+                          </Typography>
+                          <Chip
+                            label={getStopsDisplay(selectedFlight.stops)}
+                            size="small"
+                            sx={{
+                              height: 20,
+                              fontSize: '0.7rem',
+                              fontWeight: 500,
+                              backgroundColor: selectedFlight.stops === 0 ? '#d1fae5' : '#f1f5f9',
+                              color: selectedFlight.stops === 0 ? '#065f46' : '#64748b',
+                            }}
+                          />
+                        </Stack>
+                      </Box>
+
+                      {/* Arrival */}
+                      <Stack direction="row" spacing={2}>
+                        <Box sx={{ 
+                          width: 40, 
+                          height: 40, 
+                          borderRadius: '50%', 
+                          bgcolor: '#fef3c7', 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}>
+                          <FlightLand sx={{ color: '#f59e0b', fontSize: 20 }} />
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ color: '#64748b', fontSize: '0.75rem', mb: 0.5 }}>
+                            Arrival
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a', mb: 0.5 }}>
+                            {formatTime(selectedFlight.arriveAt)}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: '#475569' }}>
+                            {selectedFlight.destination.code} - {selectedFlight.destination.name || selectedFlight.destination.code}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+                            {formatDate(selectedFlight.arriveAt)}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Stack>
+                  </Box>
+
+                  <Divider />
+
+                  {/* Amenities */}
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#64748b', mb: 2, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                      Included Amenities
+                    </Typography>
+                    <Stack spacing={2}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Luggage sx={{ color: '#14b8a6', fontSize: 20 }} />
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                            Checked Baggage
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#64748b' }}>
+                            23kg included
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <AirlineSeatReclineNormal sx={{ color: '#14b8a6', fontSize: 20 }} />
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                            Seat Selection
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#64748b' }}>
+                            Available at checkout
+                          </Typography>
+                        </Box>
+                      </Stack>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <LocalOffer sx={{ color: '#14b8a6', fontSize: 20 }} />
+                        <Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                            Flexible Booking
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: '#64748b' }}>
+                            Free cancellation within 24h
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Stack>
+                  </Box>
+
+                  <Divider />
+
+                  {/* Price Breakdown */}
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#64748b', mb: 2, fontSize: '0.75rem', textTransform: 'uppercase' }}>
+                      Price Breakdown
+                    </Typography>
+                    <Stack spacing={1.5}>
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="body2" sx={{ color: '#64748b' }}>
+                          Base Fare
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                          {formatPrice(selectedFlight.priceTotal * 0.85, selectedFlight.currency)}
                         </Typography>
                       </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Box>
-                        <Typography variant="body1" sx={{ fontWeight: 700, fontSize: '1.125rem', color: '#f97316' }}>
-                          {formatPrice(flight.priceTotal)}
+                      <Stack direction="row" justifyContent="space-between">
+                        <Typography variant="body2" sx={{ color: '#64748b' }}>
+                          Taxes & Fees
                         </Typography>
-                        <Typography variant="caption" sx={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                          / pax
+                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                          {formatPrice(selectedFlight.priceTotal * 0.15, selectedFlight.currency)}
                         </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <ChooseButton variant="outlined" onClick={() => handleFlightSelect(flight)}>
-                        Choose
-                      </ChooseButton>
-                    </TableCell>
-                  </StyledTableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </StyledTableContainer>
+                      </Stack>
+                      <Divider />
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a' }}>
+                          Total
+                        </Typography>
+                        <Typography variant="h5" sx={{ fontWeight: 700, color: '#f97316' }}>
+                          {formatPrice(selectedFlight.priceTotal, selectedFlight.currency)}
+                        </Typography>
+                      </Stack>
+                      <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'center' }}>
+                        Price per passenger
+                      </Typography>
+                    </Stack>
+                  </Box>
+                </Stack>
+              </Box>
 
-        <TablePagination
-          component="div"
-          count={flights.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25, 50]}
-          sx={{
-            borderTop: '1px solid #f1f5f9',
-            '& .MuiTablePagination-toolbar': {
-              paddingLeft: 3,
-              paddingRight: 3,
-            },
-            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-              fontSize: '0.875rem',
-              color: '#64748b',
-            },
-          }}
-        />
-      </Paper>
+              {/* Drawer Footer */}
+              <Box sx={{ 
+                p: 3, 
+                borderTop: '1px solid #e2e8f0',
+                bgcolor: '#f8fafc',
+              }}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    background: 'linear-gradient(135deg, #14b8a6 0%, #0f9688 100%)',
+                    boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)',
+                    py: 1.5,
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #0f9688 0%, #0d7a6f 100%)',
+                      boxShadow: '0 6px 20px rgba(20, 184, 166, 0.35)',
+                    },
+                  }}
+                >
+                  Book Now - {formatPrice(selectedFlight.priceTotal, selectedFlight.currency)}
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </Drawer>
+      </>
     );
   }
 
@@ -495,7 +753,7 @@ export const ResultsGrid: React.FC = () => {
         />
       </Box>
 
-      {/* Flight Details Drawer */}
+      {/* Flight Details Drawer - Works for both desktop and mobile */}
       <Drawer
         anchor="right"
         open={drawerOpen}

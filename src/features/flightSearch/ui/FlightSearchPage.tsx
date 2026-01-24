@@ -12,6 +12,7 @@ import {
   Typography,
   Slide,
   Alert,
+  Paper,
 } from '@mui/material';
 import {
   FilterList,
@@ -23,6 +24,7 @@ import { ResultsGrid } from './ResultsGrid';
 import { PriceGraph } from './PriceGraph';
 import { useAppSelector } from '../../../app/hooks';
 import { selectFilters, selectAllFlights, selectUsedFallback } from '../state/selectors';
+import SelectionImage from '../../../assets/Selection.png';
 
 const DRAWER_WIDTH = 320;
 
@@ -81,117 +83,34 @@ export const FlightSearchPage: React.FC = () => {
       {/* Hero Banner */}
       <Box 
         sx={{ 
-          position: 'relative',
-          overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: 'url(https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&q=80)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            zIndex: 0,
-          },
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'linear-gradient(135deg, rgba(15, 118, 110, 0.75) 0%, rgba(20, 184, 166, 0.65) 100%)',
-            zIndex: 1,
-          },
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          py: { xs: 2, md: 3 },
+          bgcolor: 'background.default',
         }}
       >
-        <Container maxWidth="xl" sx={{ py: { xs: 8, md: 12 }, position: 'relative', zIndex: 2 }}>
-          <Box sx={{ position: 'relative' }}>
-            <Typography 
-              variant="h2" 
-              sx={{ 
-                color: '#ffffff',
-                fontWeight: 700,
-                fontSize: { xs: '2.5rem', md: '4rem' },
-                lineHeight: 1.1,
-                mb: 0.5,
-              }}
-            >
-              Explore <Box component="span" sx={{ color: '#fbbf24' }}>your</Box>
-            </Typography>
-            <Typography 
-              variant="h1" 
-              sx={{ 
-                color: '#fbbf24',
-                fontWeight: 900,
-                fontSize: { xs: '3.5rem', md: '6rem' },
-                lineHeight: 1,
-                mb: 1,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              World
-            </Typography>
-            <Typography 
-              variant="h4" 
-              sx={{ 
-                color: '#ffffff',
-                fontStyle: 'italic',
-                fontSize: { xs: '1.5rem', md: '2.5rem' },
-                fontWeight: 400,
-              }}
-            >
-              Special Offer
-            </Typography>
-          </Box>
-          
-          {/* Offer Badge */}
-          <Box
+        <Paper
+          elevation={1}
+          sx={{
+            borderRadius: 2,
+            overflow: 'hidden',
+            maxWidth: '95%',
+            width: '100%',
+            mx: 1,
+          }}
+        >
+          <Box 
+            component="img"
+            src={SelectionImage}
+            alt="Explore your World - Special Offer"
             sx={{
-              position: 'absolute',
-              top: { xs: 16, md: 24 },
-              right: { xs: 16, md: 24 },
-              bgcolor: '#fbbf24',
-              color: '#ffffff',
-              px: { xs: 2, md: 3 },
-              py: { xs: 1, md: 1.5 },
-              borderRadius: 2,
-              fontWeight: 700,
-              fontSize: { xs: '0.875rem', md: '1.25rem' },
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+              width: '100%',
+              height: 'auto',
+              display: 'block',
             }}
-          >
-            UP TO 50% OFF
-          </Box>
-
-          {/* Decorative dots */}
-          <Box
-            sx={{
-              position: 'absolute',
-              left: 0,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 1,
-              opacity: 0.3,
-            }}
-          >
-            {[...Array(9)].map((_, i) => (
-              <Box
-                key={i}
-                sx={{
-                  width: 8,
-                  height: 8,
-                  bgcolor: '#fbbf24',
-                  borderRadius: '50%',
-                }}
-              />
-            ))}
-          </Box>
-        </Container>
+          />
+        </Paper>
       </Box>
 
       <Container maxWidth="xl" sx={{ py: 4, mt: -4, position: 'relative', zIndex: 10 }}>

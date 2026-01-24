@@ -210,6 +210,7 @@ const flightSearchSlice = createSlice({
               min: minPrice,
               max: maxPrice,
             },
+            sortBy: 'price-asc',
           };
         }
       })
