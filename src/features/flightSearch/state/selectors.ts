@@ -12,6 +12,8 @@ export const selectFilters = (state: RootState) => state.flightSearch.filters;
 export const selectAllFlights = (state: RootState) => state.flightSearch.allFlights;
 export const selectSelectedForComparison = (state: RootState) => state.flightSearch.selectedForComparison;
 export const selectComparisonMode = (state: RootState) => state.flightSearch.comparisonMode;
+export const selectBookingOpen = (state: RootState) => state.flightSearch.bookingOpen;
+export const selectSelectedFlightForBooking = (state: RootState) => state.flightSearch.selectedFlightForBooking;
 export const selectStatus = (state: RootState) => state.flightSearch.status;
 export const selectError = (state: RootState) => state.flightSearch.error;
 export const selectUsedFallback = (state: RootState) => state.flightSearch.usedFallback;

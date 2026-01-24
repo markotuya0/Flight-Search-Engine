@@ -397,18 +397,21 @@ export const SearchForm: React.FC = () => {
                   setValidationErrors(prev => ({ ...prev, origin: error }));
                 }}
                 getOptionLabel={(option) => option.code}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    <Stack>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {option.code}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        {option.city}
-                      </Typography>
-                    </Stack>
-                  </Box>
-                )}
+                renderOption={(props, option) => {
+                  const { key, ...otherProps } = props;
+                  return (
+                    <Box component="li" key={key} {...otherProps}>
+                      <Stack>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {option.code}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {option.city}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  );
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -491,18 +494,21 @@ export const SearchForm: React.FC = () => {
                   setValidationErrors(prev => ({ ...prev, destination: error }));
                 }}
                 getOptionLabel={(option) => option.code}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props}>
-                    <Stack>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {option.code}
-                      </Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        {option.city}
-                      </Typography>
-                    </Stack>
-                  </Box>
-                )}
+                renderOption={(props, option) => {
+                  const { key, ...otherProps } = props;
+                  return (
+                    <Box component="li" key={key} {...otherProps}>
+                      <Stack>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {option.code}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {option.city}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  );
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}

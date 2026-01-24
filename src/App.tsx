@@ -24,6 +24,10 @@ import {
   Instagram,
 } from '@mui/icons-material';
 import { FlightGridSkeleton } from './shared/components';
+import { useAppSelector, useAppDispatch } from './app/hooks';
+import { selectBookingOpen, selectSelectedFlightForBooking } from './features/flightSearch/state/selectors';
+import { closeBookingFlow } from './features/flightSearch/state/flightSearchSlice';
+import { BookingFlow } from './features/booking';
 
 // Lazy load the FlightSearchPage for code splitting
 const FlightSearchPage = lazy(() => import('./features/flightSearch/ui/FlightSearchPage').then(module => ({ default: module.FlightSearchPage })));
@@ -31,6 +35,14 @@ const FlightSearchPage = lazy(() => import('./features/flightSearch/ui/FlightSea
 const App: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const dispatch = useAppDispatch();
+  
+  const bookingOpen = useAppSelector(selectBookingOpen);
+  const selectedFlight = useAppSelector(selectSelectedFlightForBooking);
+  
+  const handleCloseBooking = () => {
+    dispatch(closeBookingFlow());
+  };
 
   return (
     <Box component="main" sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -227,6 +239,23 @@ const App: React.FC = () => {
           </Box>
         </Container>
       </Box>
+      
+      {/* Booking Flow - Mounted at App level for proper z-index */}
+      <BookingFlow
+        open={bookingOpen}
+        onClose={handleCloseBooking}
+        flightDetails={
+          selectedFlight
+            ? {
+                origin: selectedFlight.origin.code,
+                destination: selectedFlight.destination.code,
+                departAt: selectedFlight.departAt,
+                price: selectedFlight.priceTotal,
+                currency: selectedFlight.currency,
+              }
+            : undefined
+        }
+      />
     </Box>
   );
 };

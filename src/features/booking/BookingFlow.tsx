@@ -101,12 +101,23 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
       maxWidth="md"
       fullWidth
       fullScreen={isMobile}
+      sx={{
+        zIndex: 9999, // Highest z-index to appear above everything
+      }}
       PaperProps={{
         sx: {
           borderRadius: isMobile ? 0 : 2,
           minHeight: isMobile ? '100vh' : '600px',
         },
       }}
+      BackdropProps={{
+        sx: {
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          zIndex: 9998,
+        },
+      }}
+      disableEscapeKeyDown={false}
+      disablePortal={false}
     >
       {/* Header */}
       <Box

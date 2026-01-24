@@ -48,6 +48,8 @@ export interface FlightSearchState {
   allFlights: Flight[];
   selectedForComparison: string[]; // Flight IDs selected for comparison
   comparisonMode: boolean; // Whether comparison dialog is open
+  bookingOpen: boolean; // Whether booking flow is open
+  selectedFlightForBooking: Flight | null; // Flight selected for booking
   status: LoadingStatus;
   error?: string;
   usedFallback?: boolean; // Track if last search used Duffel fallback

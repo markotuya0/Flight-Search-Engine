@@ -4,6 +4,7 @@ import type { FlightSearchState, SearchParams, Filters, Flight } from '../domain
 import { searchFlights } from '../api/searchFlights';
 import { duffelSearchFlights } from '../api/duffelSearchFlights';
 import { normalizeAmadeusResponse, normalizeDuffelOffers } from '../domain/normalize';
+import { getCachedFlights, cacheFlightResults } from '../../../shared/utils/searchCache';
 
 /**
  * Check if an error should trigger Duffel fallback
@@ -39,11 +40,22 @@ const shouldUseFallback = (error: any): boolean => {
   return false;
 };
 
-// Async thunk for fetching flights with fallback support
+// Async thunk for fetching flights with fallback support and caching
 export const fetchFlights = createAsyncThunk(
   'flightSearch/fetchFlights',
   async (searchParams: SearchParams, { rejectWithValue }) => {
     console.log('Starting flight search with params:', searchParams);
+    
+    // Check cache first
+    const cachedResult = getCachedFlights(searchParams);
+    if (cachedResult) {
+      console.log('✅ Using cached results');
+      return {
+        flights: cachedResult.flights,
+        searchParams,
+        usedFallback: cachedResult.usedFallback || false,
+      };
+    }
     
     try {
       // Try Amadeus first (primary provider)
@@ -52,6 +64,10 @@ export const fetchFlights = createAsyncThunk(
       const flights = normalizeAmadeusResponse(amadeusResponse);
       
       console.log(`Amadeus search successful: ${flights.length} flights found`);
+      
+      // Cache the results
+      cacheFlightResults(searchParams, flights, false);
+      
       return { 
         flights, 
         searchParams, 
@@ -68,6 +84,10 @@ export const fetchFlights = createAsyncThunk(
           const flights = normalizeDuffelOffers(duffelOffers);
           
           console.log(`Duffel fallback successful: ${flights.length} flights found`);
+          
+          // Cache the fallback results
+          cacheFlightResults(searchParams, flights, true);
+          
           return { 
             flights, 
             searchParams, 
@@ -110,6 +130,8 @@ const initialState: FlightSearchState = {
   allFlights: [],
   selectedForComparison: [], // Flight IDs selected for comparison
   comparisonMode: false, // Whether comparison dialog is open
+  bookingOpen: false, // Whether booking flow is open
+  selectedFlightForBooking: null, // Flight selected for booking
   status: 'idle',
   error: undefined,
   usedFallback: false,
@@ -206,6 +228,16 @@ const flightSearchSlice = createSlice({
     setComparisonMode: (state, action: PayloadAction<boolean>) => {
       state.comparisonMode = action.payload;
     },
+    
+    openBookingFlow: (state, action: PayloadAction<Flight>) => {
+      state.bookingOpen = true;
+      state.selectedFlightForBooking = action.payload;
+    },
+    
+    closeBookingFlow: (state) => {
+      state.bookingOpen = false;
+      state.selectedFlightForBooking = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -259,6 +291,8 @@ export const {
   toggleFlightForComparison,
   clearComparisonSelection,
   setComparisonMode,
+  openBookingFlow,
+  closeBookingFlow,
 } = flightSearchSlice.actions;
 
 export default flightSearchSlice.reducer;
