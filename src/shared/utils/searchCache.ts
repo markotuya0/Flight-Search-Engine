@@ -1,4 +1,5 @@
 import type { Flight, SearchParams } from '../../features/flightSearch/domain/types';
+import { logger } from './logger';
 
 interface CacheEntry {
   searchParams: SearchParams;
@@ -88,16 +89,16 @@ export const getCachedFlights = (searchParams: SearchParams): { flights: Flight[
   const entry = allEntries[cacheKey];
   
   if (!entry) {
-    console.log('Cache miss: No entry found for', cacheKey);
+    logger.log('Cache miss: No entry found for', cacheKey);
     return null;
   }
   
   if (!isCacheValid(entry)) {
-    console.log('Cache expired for', cacheKey);
+    logger.log('Cache expired for', cacheKey);
     return null;
   }
   
-  console.log('Cache hit! Using cached results for', cacheKey);
+  logger.log('Cache hit! Using cached results for', cacheKey);
   return {
     flights: entry.flights,
     usedFallback: entry.usedFallback,
@@ -128,7 +129,7 @@ export const cacheFlightResults = (
   allEntries = limitCacheSize(allEntries);
   
   saveAllCacheEntries(allEntries);
-  console.log('Cached flight results for', cacheKey);
+  logger.log('Cached flight results for', cacheKey);
 };
 
 /**
@@ -137,7 +138,7 @@ export const cacheFlightResults = (
 export const clearFlightCache = (): void => {
   try {
     localStorage.removeItem(CACHE_KEY);
-    console.log('Flight cache cleared');
+    logger.log('Flight cache cleared');
   } catch (error) {
     console.error('Error clearing cache:', error);
   }

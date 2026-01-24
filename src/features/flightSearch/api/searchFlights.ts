@@ -1,3 +1,4 @@
+import { logger } from '../../shared/utils/logger';
 import { amadeusClient } from './amadeusClient';
 import type { SearchParams } from '../domain/types';
 
@@ -131,7 +132,7 @@ export const searchFlights = async (searchParams: SearchParams): Promise<Amadeus
     apiParams.returnDate = searchParams.returnDate;
   }
 
-  console.log('Searching flights with params:', apiParams);
+  logger.log('Searching flights with params:', apiParams);
 
   try {
     const response = await amadeusClient.request<AmadeusFlightSearchResponse>(
@@ -139,7 +140,7 @@ export const searchFlights = async (searchParams: SearchParams): Promise<Amadeus
       apiParams
     );
 
-    console.log(`Found ${response.data.length} flight offers`);
+    logger.log(`Found ${response.data.length} flight offers`);
     return response;
   } catch (error) {
     console.error('Flight search failed:', error);

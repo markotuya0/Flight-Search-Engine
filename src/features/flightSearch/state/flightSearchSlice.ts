@@ -5,6 +5,7 @@ import { searchFlights } from '../api/searchFlights';
 import { duffelSearchFlights } from '../api/duffelSearchFlights';
 import { normalizeAmadeusResponse, normalizeDuffelOffers } from '../domain/normalize';
 import { getCachedFlights, cacheFlightResults } from '../../../shared/utils/searchCache';
+import { logger } from '../../../shared/utils/logger';
 
 /**
  * Check if an error should trigger Duffel fallback
@@ -16,7 +17,7 @@ const shouldUseFallback = (error: any): boolean => {
     
     // Check for 5xx server errors
     if (status >= 500 && status < 600) {
-      console.log(`Amadeus 5xx error (${status}), triggering fallback`);
+      logger.log(`Amadeus 5xx error (${status}), triggering fallback`);
       return true;
     }
   }
@@ -25,7 +26,7 @@ const shouldUseFallback = (error: any): boolean => {
   if (error?.response?.data?.errors) {
     const hasError141 = error.response.data.errors.some((err: any) => err.code === "141");
     if (hasError141) {
-      console.log('Amadeus error 141 detected, triggering fallback');
+      logger.log('Amadeus error 141 detected, triggering fallback');
       return true;
     }
   }
@@ -33,7 +34,7 @@ const shouldUseFallback = (error: any): boolean => {
   // Check error message for common patterns
   const errorMessage = error?.message || '';
   if (errorMessage.includes('141') || errorMessage.includes('5')) {
-    console.log('Error message suggests fallback condition:', errorMessage);
+    logger.log('Error message suggests fallback condition:', errorMessage);
     return true;
   }
 
@@ -44,12 +45,12 @@ const shouldUseFallback = (error: any): boolean => {
 export const fetchFlights = createAsyncThunk(
   'flightSearch/fetchFlights',
   async (searchParams: SearchParams, { rejectWithValue }) => {
-    console.log('Starting flight search with params:', searchParams);
+    logger.log('Starting flight search with params:', searchParams);
     
     // Check cache first
     const cachedResult = getCachedFlights(searchParams);
     if (cachedResult) {
-      console.log('✅ Using cached results');
+      logger.log('✅ Using cached results');
       return {
         flights: cachedResult.flights,
         searchParams,
@@ -59,11 +60,11 @@ export const fetchFlights = createAsyncThunk(
     
     try {
       // Try Amadeus first (primary provider)
-      console.log('Attempting Amadeus search...');
+      logger.log('Attempting Amadeus search...');
       const amadeusResponse = await searchFlights(searchParams);
       const flights = normalizeAmadeusResponse(amadeusResponse);
       
-      console.log(`Amadeus search successful: ${flights.length} flights found`);
+      logger.log(`Amadeus search successful: ${flights.length} flights found`);
       
       // Cache the results
       cacheFlightResults(searchParams, flights, false);
@@ -79,11 +80,11 @@ export const fetchFlights = createAsyncThunk(
       // Check if we should try Duffel fallback
       if (shouldUseFallback(amadeusError)) {
         try {
-          console.log('Attempting Duffel fallback...');
+          logger.log('Attempting Duffel fallback...');
           const duffelOffers = await duffelSearchFlights(searchParams);
           const flights = normalizeDuffelOffers(duffelOffers);
           
-          console.log(`Duffel fallback successful: ${flights.length} flights found`);
+          logger.log(`Duffel fallback successful: ${flights.length} flights found`);
           
           // Cache the fallback results
           cacheFlightResults(searchParams, flights, true);

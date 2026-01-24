@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import {
   Box,
   TextField,
@@ -30,7 +30,7 @@ interface PaymentData {
   cvv: string;
 }
 
-export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetails }) => {
+export const PaymentForm = forwardRef<any, PaymentFormProps>(({ onSubmit, flightDetails }, ref) => {
   const [formData, setFormData] = useState<PaymentData>({
     cardNumber: '',
     cardName: '',
@@ -103,27 +103,18 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = () => {
-    if (validate()) {
+    
+    if (Object.keys(newErrors).length === 0) {
       onSubmit(formData);
+      return true;
     }
+    return false;
   };
 
-  // Auto-submit when all fields are valid
-  React.useEffect(() => {
-    const allFieldsFilled =
-      formData.cardNumber.replace(/\s/g, '').length === 16 &&
-      formData.cardName.trim() !== '' &&
-      formData.expiryDate.length === 5 &&
-      formData.cvv.length === 3;
-
-    if (allFieldsFilled && Object.keys(errors).length === 0) {
-      handleSubmit();
-    }
-  }, [formData]);
+  // Expose validate method to parent via ref
+  useImperativeHandle(ref, () => ({
+    validate,
+  }));
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
@@ -135,10 +126,10 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: '#0f172a' }}>
+      <Typography variant="h6" sx={{ mb: 0.5, fontWeight: 600, color: '#0f172a', fontSize: '1rem' }}>
         Payment Information
       </Typography>
-      <Typography variant="body2" sx={{ mb: 3, color: '#64748b' }}>
+      <Typography variant="body2" sx={{ mb: 2, color: '#64748b', fontSize: '0.875rem' }}>
         Your payment is secure and encrypted
       </Typography>
 
@@ -147,36 +138,36 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            mb: 3,
+            p: 2,
+            mb: 2,
             bgcolor: '#f0fdfa',
             border: '1px solid #99f6e4',
             borderRadius: 2,
           }}
         >
-          <Stack spacing={2}>
+          <Stack spacing={1}>
             <Stack direction="row" justifyContent="space-between">
-              <Typography variant="body2" sx={{ color: '#64748b' }}>
+              <Typography variant="body2" sx={{ color: '#64748b', fontSize: '0.875rem' }}>
                 Flight
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a', fontSize: '0.875rem' }}>
                 {flightDetails.origin} → {flightDetails.destination}
               </Typography>
             </Stack>
             <Stack direction="row" justifyContent="space-between">
-              <Typography variant="body2" sx={{ color: '#64748b' }}>
+              <Typography variant="body2" sx={{ color: '#64748b', fontSize: '0.875rem' }}>
                 Seat Selection
               </Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a', fontSize: '0.875rem' }}>
                 Included
               </Typography>
             </Stack>
             <Divider />
             <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0f172a', fontSize: '1rem' }}>
                 Total
               </Typography>
-              <Typography variant="h5" sx={{ fontWeight: 700, color: '#14b8a6' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: '#14b8a6', fontSize: '1.25rem' }}>
                 {formatPrice(flightDetails.price, flightDetails.currency)}
               </Typography>
             </Stack>
@@ -185,7 +176,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
       )}
 
       {/* Payment Form */}
-      <Stack spacing={3}>
+      <Stack spacing={2}>
         <TextField
           fullWidth
           label="Card Number"
@@ -195,9 +186,10 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
           helperText={errors.cardNumber}
           placeholder="1234 5678 9012 3456"
           InputProps={{
-            startAdornment: <CreditCard sx={{ mr: 1, color: '#64748b' }} />,
+            startAdornment: <CreditCard sx={{ mr: 1, color: '#64748b', fontSize: 20 }} />,
           }}
           required
+          size="small"
         />
 
         <TextField
@@ -209,6 +201,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
           helperText={errors.cardName}
           placeholder="JOHN DOE"
           required
+          size="small"
         />
 
         <Stack direction="row" spacing={2}>
@@ -221,6 +214,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
             helperText={errors.expiryDate}
             placeholder="MM/YY"
             required
+            size="small"
           />
           <TextField
             fullWidth
@@ -232,17 +226,18 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
             placeholder="123"
             type="password"
             InputProps={{
-              startAdornment: <Lock sx={{ mr: 1, color: '#64748b', fontSize: 18 }} />,
+              startAdornment: <Lock sx={{ mr: 1, color: '#64748b', fontSize: 16 }} />,
             }}
             required
+            size="small"
           />
         </Stack>
       </Stack>
 
       <Box
         sx={{
-          mt: 3,
-          p: 2,
+          mt: 2,
+          p: 1.5,
           bgcolor: '#f8fafc',
           borderRadius: 1,
           display: 'flex',
@@ -250,11 +245,11 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ onSubmit, flightDetail
           gap: 1,
         }}
       >
-        <Lock sx={{ fontSize: 16, color: '#64748b' }} />
-        <Typography variant="caption" sx={{ color: '#64748b' }}>
+        <Lock sx={{ fontSize: 14, color: '#64748b' }} />
+        <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
           Your payment information is encrypted and secure
         </Typography>
       </Box>
     </Box>
   );
-};
+});

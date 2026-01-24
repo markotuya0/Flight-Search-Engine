@@ -30,6 +30,18 @@ const PriceGraphComponent: React.FC = () => {
   const allFlights = useAppSelector(selectAllFlights);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [containerReady, setContainerReady] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // Ensure container is ready before rendering chart
+  React.useEffect(() => {
+    if (containerRef.current) {
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      if (width > 0 && height > 0) {
+        setContainerReady(true);
+      }
+    }
+  }, [priceSeries, status]);
 
   // Loading state
   if (status === 'loading') {
@@ -111,12 +123,15 @@ const PriceGraphComponent: React.FC = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ 
-        height: { xs: 250, sm: 300, md: 350 }, 
-        width: '100%', 
-        minHeight: { xs: 250, md: 300 },
-        overflowX: 'auto',
-      }}>
+      <Box 
+        ref={containerRef}
+        sx={{ 
+          height: { xs: 250, sm: 300, md: 350 }, 
+          width: '100%', 
+          minHeight: { xs: 250, md: 300 },
+          overflowX: 'auto',
+        }}
+      >
         {priceSeries.length === 0 ? (
           // Empty state
           <Box 
@@ -136,8 +151,8 @@ const PriceGraphComponent: React.FC = () => {
               Adjust your filters to see price trends by departure time
             </Typography>
           </Box>
-        ) : (
-          // Chart with data
+        ) : containerReady ? (
+          // Chart with data - only render when container is ready
           <ResponsiveContainer width="100%" height="100%" minWidth={isMobile ? 600 : undefined}>
             <LineChart 
               data={priceSeries} 
@@ -177,6 +192,20 @@ const PriceGraphComponent: React.FC = () => {
               />
             </LineChart>
           </ResponsiveContainer>
+        ) : (
+          // Loading container dimensions
+          <Box 
+            sx={{ 
+              height: '100%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Loading chart...
+            </Typography>
+          </Box>
         )}
       </Box>
 

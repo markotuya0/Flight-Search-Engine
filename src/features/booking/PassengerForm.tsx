@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import {
   Box,
   TextField,
@@ -20,7 +20,7 @@ interface PassengerData {
   gender: string;
 }
 
-export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
+export const PassengerForm = forwardRef<any, PassengerFormProps>(({ onSubmit }, ref) => {
   const [formData, setFormData] = useState<PassengerData>({
     firstName: '',
     lastName: '',
@@ -70,33 +70,29 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = () => {
-    if (validate()) {
+    
+    if (Object.keys(newErrors).length === 0) {
       onSubmit(formData);
+      return true;
     }
+    return false;
   };
 
-  // Auto-submit when all fields are valid
-  React.useEffect(() => {
-    const allFieldsFilled = Object.values(formData).every((value) => value.trim() !== '');
-    if (allFieldsFilled && Object.keys(errors).length === 0) {
-      handleSubmit();
-    }
-  }, [formData]);
+  // Expose validate method to parent via ref
+  useImperativeHandle(ref, () => ({
+    validate,
+  }));
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: '#0f172a' }}>
+      <Typography variant="h6" sx={{ mb: 0.5, fontWeight: 600, color: '#0f172a', fontSize: '1rem' }}>
         Passenger Information
       </Typography>
-      <Typography variant="body2" sx={{ mb: 3, color: '#64748b' }}>
+      <Typography variant="body2" sx={{ mb: 2, color: '#64748b', fontSize: '0.875rem' }}>
         Please enter the passenger details as they appear on the travel document
       </Typography>
 
-      <Stack spacing={3}>
+      <Stack spacing={2}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
           <TextField
             fullWidth
@@ -106,6 +102,7 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
             error={!!errors.firstName}
             helperText={errors.firstName}
             required
+            size="small"
           />
           <TextField
             fullWidth
@@ -115,6 +112,7 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
             error={!!errors.lastName}
             helperText={errors.lastName}
             required
+            size="small"
           />
         </Stack>
 
@@ -127,6 +125,7 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
           error={!!errors.email}
           helperText={errors.email}
           required
+          size="small"
         />
 
         <TextField
@@ -139,6 +138,7 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
           helperText={errors.phone}
           placeholder="+1 (555) 123-4567"
           required
+          size="small"
         />
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -152,6 +152,7 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
             helperText={errors.dateOfBirth}
             InputLabelProps={{ shrink: true }}
             required
+            size="small"
           />
           <TextField
             fullWidth
@@ -162,6 +163,7 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
             error={!!errors.gender}
             helperText={errors.gender}
             required
+            size="small"
           >
             <MenuItem value="male">Male</MenuItem>
             <MenuItem value="female">Female</MenuItem>
@@ -172,4 +174,4 @@ export const PassengerForm: React.FC<PassengerFormProps> = ({ onSubmit }) => {
       </Stack>
     </Box>
   );
-};
+});

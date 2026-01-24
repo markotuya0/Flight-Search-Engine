@@ -4,3 +4,5 @@ export * from './helpers';
 export * from './rateLimiter';
 export * from './sharing';
 export * from './searchCache';
+export * from './logger';
+export * from './performance';

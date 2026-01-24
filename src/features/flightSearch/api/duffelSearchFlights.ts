@@ -1,4 +1,5 @@
 import type { SearchParams } from '../domain/types';
+import { logger } from '../../shared/utils/logger';
 
 // Duffel offer interface for type safety
 interface DuffelOffer {
@@ -53,7 +54,7 @@ export const duffelSearchFlights = async (searchParams: SearchParams): Promise<D
     throw new Error('Origin, destination, and departure date are required');
   }
 
-  console.log('Duffel search params:', {
+  logger.log('Duffel search params:', {
     origin: searchParams.origin,
     destination: searchParams.destination,
     departDate: searchParams.departDate,
@@ -61,7 +62,7 @@ export const duffelSearchFlights = async (searchParams: SearchParams): Promise<D
   });
 
   try {
-    console.log('Calling Duffel serverless function...');
+    logger.log('Calling Duffel serverless function...');
     
     // Call our serverless function instead of Duffel directly
     const response = await fetch('/api/duffel/search', {
@@ -87,9 +88,9 @@ export const duffelSearchFlights = async (searchParams: SearchParams): Promise<D
     const offers: DuffelOffer[] = data.data || [];
 
     if (offers.length === 0) {
-      console.warn('No offers found from Duffel');
+      logger.warn('No offers found from Duffel');
     } else {
-      console.log(`Found ${offers.length} Duffel offers`);
+      logger.log(`Found ${offers.length} Duffel offers`);
     }
 
     return offers;

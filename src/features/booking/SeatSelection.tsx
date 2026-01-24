@@ -53,52 +53,52 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: '#0f172a' }}>
+      <Typography variant="h6" sx={{ mb: 0.5, fontWeight: 600, color: '#0f172a', fontSize: '1rem' }}>
         Select Your Seat
       </Typography>
-      <Typography variant="body2" sx={{ mb: 3, color: '#64748b' }}>
+      <Typography variant="body2" sx={{ mb: 2, color: '#64748b', fontSize: '0.875rem' }}>
         Choose your preferred seat from the available options
       </Typography>
 
       {/* Legend */}
-      <Stack direction="row" spacing={3} sx={{ mb: 3, justifyContent: 'center' }}>
-        <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={2} sx={{ mb: 2, justifyContent: 'center' }}>
+        <Stack direction="row" spacing={0.5} alignItems="center">
           <Box
             sx={{
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               bgcolor: '#ffffff',
               border: '2px solid #cbd5e1',
               borderRadius: 1,
             }}
           />
-          <Typography variant="caption" sx={{ color: '#64748b' }}>
+          <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
             Available
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={0.5} alignItems="center">
           <Box
             sx={{
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               bgcolor: '#14b8a6',
               borderRadius: 1,
             }}
           />
-          <Typography variant="caption" sx={{ color: '#64748b' }}>
+          <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
             Selected
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Stack direction="row" spacing={0.5} alignItems="center">
           <Box
             sx={{
-              width: 24,
-              height: 24,
+              width: 20,
+              height: 20,
               bgcolor: '#e2e8f0',
               borderRadius: 1,
             }}
           />
-          <Typography variant="caption" sx={{ color: '#64748b' }}>
+          <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>
             Occupied
           </Typography>
         </Stack>
@@ -108,24 +108,24 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
       <Paper
         elevation={0}
         sx={{
-          p: 3,
+          p: 2,
           bgcolor: '#f8fafc',
           border: '1px solid #e2e8f0',
           borderRadius: 2,
-          maxHeight: '400px',
+          maxHeight: '300px',
           overflow: 'auto',
         }}
       >
         {/* Column Headers */}
-        <Stack direction="row" spacing={1} sx={{ mb: 2, justifyContent: 'center' }}>
+        <Stack direction="row" spacing={1} sx={{ mb: 1, justifyContent: 'center' }}>
           {SEATS_PER_ROW.map((seat, idx) => (
             <Box
               key={idx}
               sx={{
-                width: 40,
+                width: 32,
                 textAlign: 'center',
                 fontWeight: 600,
-                fontSize: '0.75rem',
+                fontSize: '0.7rem',
                 color: '#64748b',
               }}
             >
@@ -142,7 +142,7 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
               key={row}
               direction="row"
               spacing={1}
-              sx={{ mb: 1, justifyContent: 'center', alignItems: 'center' }}
+              sx={{ mb: 0.5, justifyContent: 'center', alignItems: 'center' }}
             >
               {SEATS_PER_ROW.map((seat, seatIdx) => {
                 if (seat === '') {
@@ -151,14 +151,14 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
                     <Box
                       key={seatIdx}
                       sx={{
-                        width: 40,
-                        height: 40,
+                        width: 32,
+                        height: 32,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <Typography variant="caption" sx={{ color: '#cbd5e1', fontWeight: 600 }}>
+                      <Typography variant="caption" sx={{ color: '#cbd5e1', fontWeight: 600, fontSize: '0.7rem' }}>
                         {row}
                       </Typography>
                     </Box>
@@ -173,8 +173,8 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
                     key={seatIdx}
                     onClick={() => !isDisabled && handleSeatClick(row, seat)}
                     sx={{
-                      width: 40,
-                      height: 40,
+                      width: 32,
+                      height: 32,
                       bgcolor: getSeatColor(status),
                       border: status === 'available' ? '2px solid #cbd5e1' : 'none',
                       borderRadius: 1,
@@ -193,7 +193,7 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
                   >
                     <EventSeat
                       sx={{
-                        fontSize: 20,
+                        fontSize: 16,
                         color:
                           status === 'selected'
                             ? '#ffffff'
@@ -211,7 +211,7 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
       </Paper>
 
       {selectedSeat && (
-        <Box sx={{ mt: 3, textAlign: 'center' }}>
+        <Box sx={{ mt: 2, textAlign: 'center' }}>
           <Chip
             icon={<AirlineSeatReclineNormal />}
             label={`Selected Seat: ${selectedSeat}`}
@@ -219,8 +219,8 @@ export const SeatSelection: React.FC<SeatSelectionProps> = ({ onSelect, selected
               bgcolor: '#d1fae5',
               color: '#065f46',
               fontWeight: 600,
-              fontSize: '0.875rem',
-              py: 2.5,
+              fontSize: '0.8rem',
+              py: 2,
               px: 1,
             }}
           />
