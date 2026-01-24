@@ -6,8 +6,6 @@
 
 The Flight Search Engine is a production-ready, full-stack web application that enables users to search, compare, and book flights from multiple airlines. Built with modern web technologies and best practices, it features intelligent API fallback, advanced filtering, real-time search, and a complete booking flow.
 
-**Live Demo:** [Your Vercel URL]  
-**Repository:** [Your GitHub URL]  
 **Documentation:** See `/docs` folder
 
 ---
@@ -440,19 +438,19 @@ Deployment complete
 
 ### Planned Features
 
-**Phase 1 (Q1 2024):**
+**Phase 1 (Q1 2026):**
 - [ ] User authentication
 - [ ] Saved searches
 - [ ] Price alerts
 - [ ] Email notifications
 
-**Phase 2 (Q2 2024):**
+**Phase 2 (Q2 2026):**
 - [ ] Multi-city flights
 - [ ] Hotel integration
 - [ ] Car rental integration
 - [ ] Loyalty program integration
 
-**Phase 3 (Q3 2024):**
+**Phase 3 (Q3 2026):**
 - [ ] Mobile app (React Native)
 - [ ] Offline mode
 - [ ] Real-time price updates
@@ -466,24 +464,6 @@ Deployment complete
 - [ ] Advanced caching (IndexedDB)
 - [ ] Web Workers for heavy computations
 - [ ] A/B testing framework
-
----
-
-## 👥 Team & Roles
-
-### Development Team
-
-- **Frontend Developer** - React, TypeScript, UI/UX
-- **Backend Developer** - API integration, serverless functions
-- **DevOps Engineer** - Deployment, monitoring, CI/CD
-- **QA Engineer** - Testing, quality assurance
-- **Designer** - UI/UX design, prototyping
-
-### Stakeholders
-
-- **Product Owner** - Feature prioritization
-- **Project Manager** - Timeline and coordination
-- **Business Analyst** - Requirements gathering
 
 ---
 
@@ -510,10 +490,6 @@ Deployment complete
 ## 🔗 Important Links
 
 ### Development
-
-- **Repository**: [GitHub URL]
-- **Live Demo**: [Vercel URL]
-- **Staging**: [Staging URL]
 - **API Docs**: [API Documentation]
 
 ### External Services
@@ -532,15 +508,9 @@ Deployment complete
 
 ## 📞 Contact & Support
 
-### For Reviewers
-
-- **Technical Questions**: dev@example.com
-- **Demo Request**: demo@example.com
-- **Documentation Issues**: docs@example.com
-
 ### For Users
 
-- **Support**: support@example.com
+- **Support**: markotuya0@gmail.com
 - **Bug Reports**: [GitHub Issues]
 - **Feature Requests**: [GitHub Discussions]
 
