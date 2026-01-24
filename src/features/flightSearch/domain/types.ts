@@ -37,6 +37,7 @@ export interface Filters {
   stops: number[]; // Array of allowed stop counts (0 = non-stop, 1 = 1 stop, etc.)
   airlines: string[]; // Array of airline codes
   price: PriceFilter;
+  sortBy: 'price-asc' | 'price-desc' | 'duration-asc' | 'departure-asc';
 }
 
 export type LoadingStatus = 'idle' | 'loading' | 'succeeded' | 'failed';

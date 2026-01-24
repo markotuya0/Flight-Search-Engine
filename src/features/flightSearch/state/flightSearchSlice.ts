@@ -105,6 +105,7 @@ const initialState: FlightSearchState = {
       min: 0,
       max: 2000,
     },
+    sortBy: 'price-asc',
   },
   allFlights: [],
   status: 'idle',
@@ -142,6 +143,7 @@ const flightSearchSlice = createSlice({
           min: minPrice,
           max: maxPrice,
         },
+        sortBy: 'price-asc',
       };
     },
     
