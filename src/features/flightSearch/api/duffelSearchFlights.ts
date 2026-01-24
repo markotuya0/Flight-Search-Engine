@@ -1,5 +1,5 @@
 import type { SearchParams } from '../domain/types';
-import { logger } from '../../shared/utils/logger';
+import { logger } from '../../../shared/utils/logger';
 
 // Duffel offer interface for type safety
 interface DuffelOffer {

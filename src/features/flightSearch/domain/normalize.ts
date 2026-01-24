@@ -1,6 +1,6 @@
 import type { Flight, Airport } from './types';
 import type { AmadeusFlightOffer, AmadeusFlightSearchResponse } from '../api/searchFlights';
-import { logger } from '../../shared/utils/logger';
+import { logger } from '../../../shared/utils/logger';
 
 // Duffel offer interface for normalization
 interface DuffelOffer {

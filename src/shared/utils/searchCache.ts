@@ -1,5 +1,5 @@
 import type { Flight, SearchParams } from '../../features/flightSearch/domain/types';
-import { logger } from './logger';
+import { logger } from '../utils/logger';
 
 interface CacheEntry {
   searchParams: SearchParams;

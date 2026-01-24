@@ -3,7 +3,7 @@
  * Handles OAuth authentication and token management
  */
 
-import { logger } from '../../shared/utils/logger';
+import { logger } from '../../../shared/utils/logger';
 
 interface AmadeusToken {
   access_token: string;

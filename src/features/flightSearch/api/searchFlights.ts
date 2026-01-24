@@ -1,4 +1,4 @@
-import { logger } from '../../shared/utils/logger';
+import { logger } from '../../../shared/utils/logger';
 import { amadeusClient } from './amadeusClient';
 import type { SearchParams } from '../domain/types';
 
