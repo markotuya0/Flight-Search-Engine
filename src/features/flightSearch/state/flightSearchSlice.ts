@@ -75,8 +75,6 @@ export const fetchFlights = createAsyncThunk(
         usedFallback: false 
       };
     } catch (amadeusError) {
-      console.error('Amadeus search failed:', amadeusError);
-      
       // Check if we should try Duffel fallback
       if (shouldUseFallback(amadeusError)) {
         try {
@@ -94,9 +92,7 @@ export const fetchFlights = createAsyncThunk(
             searchParams, 
             usedFallback: true 
           };
-        } catch (duffelError) {
-          console.error('Duffel fallback also failed:', duffelError);
-          
+        } catch {
           // Both providers failed
           const combinedMessage = 'Flight search unavailable (Amadeus + fallback failed). Please try again.';
           return rejectWithValue(combinedMessage);

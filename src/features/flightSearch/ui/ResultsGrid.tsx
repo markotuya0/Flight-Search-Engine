@@ -47,7 +47,7 @@ import {
   selectSelectedForComparison,
   selectCanCompare,
 } from '../state/selectors';
-import { fetchFlights, toggleFlightForComparison, setComparisonMode, openBookingFlow } from '../state/flightSearchSlice';
+import { fetchFlights, toggleFlightForComparison, setComparisonMode, openBookingFlow, resetFilters } from '../state/flightSearchSlice';
 import { FlightGridSkeleton, ErrorState, EmptyState, WelcomeState } from '../../../shared/components';
 import { FlightComparison } from './FlightComparison';
 import { generateShareUrl, copyToClipboard } from '../../../shared/utils';
@@ -299,7 +299,7 @@ const ResultsGridComponent: React.FC = () => {
         message="Try adjusting your price range, airline preferences, or number of stops to see more results."
         actionLabel="Clear All Filters"
         onAction={() => {
-          console.log('Clear filters');
+          dispatch(resetFilters());
         }}
       />
     );

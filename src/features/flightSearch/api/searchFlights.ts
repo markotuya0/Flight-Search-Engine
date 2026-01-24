@@ -134,16 +134,11 @@ export const searchFlights = async (searchParams: SearchParams): Promise<Amadeus
 
   logger.log('Searching flights with params:', apiParams);
 
-  try {
-    const response = await amadeusClient.request<AmadeusFlightSearchResponse>(
-      '/v2/shopping/flight-offers',
-      apiParams
-    );
+  const response = await amadeusClient.request<AmadeusFlightSearchResponse>(
+    '/v2/shopping/flight-offers',
+    apiParams
+  );
 
-    logger.log(`Found ${response.data.length} flight offers`);
-    return response;
-  } catch (error) {
-    console.error('Flight search failed:', error);
-    throw error;
-  }
+  logger.log(`Found ${response.data.length} flight offers`);
+  return response;
 };

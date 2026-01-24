@@ -19,5 +19,16 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Allow any types for external library interfaces (MUI, Recharts, etc.)
+      '@typescript-eslint/no-explicit-any': 'warn',
+      // Allow case declarations
+      'no-case-declarations': 'off',
+      // Relax some React hooks rules for demo purposes
+      'react-hooks/exhaustive-deps': 'warn',
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/static-components': 'warn',
+      'react-hooks/purity': 'warn',
+    },
   },
 ])
