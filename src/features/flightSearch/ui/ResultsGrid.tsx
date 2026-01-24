@@ -24,6 +24,7 @@ import {
   Badge,
   Snackbar,
   Alert,
+  CircularProgress,
 } from '@mui/material';
 import { 
   FlightTakeoff, 
@@ -211,6 +212,7 @@ const ResultsGridComponent: React.FC = () => {
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [bookingOpen, setBookingOpen] = React.useState(false);
+  const [shareLoading, setShareLoading] = React.useState(false);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -247,16 +249,20 @@ const ResultsGridComponent: React.FC = () => {
   const handleShare = async () => {
     if (!selectedFlight) return;
     
+    setShareLoading(true);
     const shareUrl = generateShareUrl(selectedFlight);
     const success = await copyToClipboard(shareUrl);
     
-    if (success) {
-      setSnackbarMessage('Flight link copied to clipboard!');
-      setSnackbarOpen(true);
-    } else {
-      setSnackbarMessage('Failed to copy link. Please try again.');
-      setSnackbarOpen(true);
-    }
+    setTimeout(() => {
+      setShareLoading(false);
+      if (success) {
+        setSnackbarMessage('✓ Flight link copied to clipboard!');
+        setSnackbarOpen(true);
+      } else {
+        setSnackbarMessage('Failed to copy link. Please try again.');
+        setSnackbarOpen(true);
+      }
+    }, 300);
   };
 
   const handleSnackbarClose = () => {
@@ -719,8 +725,9 @@ const ResultsGridComponent: React.FC = () => {
                   <Button
                     fullWidth
                     variant="outlined"
-                    startIcon={<ShareIcon />}
+                    startIcon={shareLoading ? <CircularProgress size={16} /> : <ShareIcon />}
                     onClick={handleShare}
+                    disabled={shareLoading}
                     sx={{
                       textTransform: 'none',
                       fontWeight: 600,
@@ -731,9 +738,13 @@ const ResultsGridComponent: React.FC = () => {
                         bgcolor: '#f0fdfa',
                         color: '#14b8a6',
                       },
+                      '&:disabled': {
+                        borderColor: '#e2e8f0',
+                        color: '#94a3b8',
+                      },
                     }}
                   >
-                    Share Flight
+                    {shareLoading ? 'Copying...' : 'Share Flight'}
                   </Button>
                   <Button
                     fullWidth
@@ -1120,8 +1131,9 @@ const ResultsGridComponent: React.FC = () => {
                 <Button
                   fullWidth
                   variant="outlined"
-                  startIcon={<ShareIcon />}
+                  startIcon={shareLoading ? <CircularProgress size={16} /> : <ShareIcon />}
                   onClick={handleShare}
+                  disabled={shareLoading}
                   sx={{
                     textTransform: 'none',
                     fontWeight: 600,
@@ -1132,9 +1144,13 @@ const ResultsGridComponent: React.FC = () => {
                       bgcolor: '#f0fdfa',
                       color: '#14b8a6',
                     },
+                    '&:disabled': {
+                      borderColor: '#e2e8f0',
+                      color: '#94a3b8',
+                    },
                   }}
                 >
-                  Share Flight
+                  {shareLoading ? 'Copying...' : 'Share Flight'}
                 </Button>
                 <Button
                   fullWidth
