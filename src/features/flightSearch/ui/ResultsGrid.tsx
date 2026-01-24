@@ -19,6 +19,9 @@ import {
   Drawer,
   IconButton,
   Divider,
+  Checkbox,
+  Fab,
+  Badge,
 } from '@mui/material';
 import { 
   FlightTakeoff, 
@@ -28,11 +31,21 @@ import {
   Luggage,
   AirlineSeatReclineNormal,
   LocalOffer,
+  CompareArrows,
 } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
-import { selectFilteredFlights, selectStatus, selectError, selectSearchParams, selectAllFlights } from '../state/selectors';
-import { fetchFlights } from '../state/flightSearchSlice';
+import { 
+  selectFilteredFlights, 
+  selectStatus, 
+  selectError, 
+  selectSearchParams, 
+  selectAllFlights,
+  selectSelectedForComparison,
+  selectCanCompare,
+} from '../state/selectors';
+import { fetchFlights, toggleFlightForComparison, setComparisonMode } from '../state/flightSearchSlice';
 import { FlightGridSkeleton, ErrorState, EmptyState, WelcomeState } from '../../../shared/components';
+import { FlightComparison } from './FlightComparison';
 
 // Helper function to get airline color
 const getAirlineColor = (airlineCode: string): string => {
@@ -183,6 +196,8 @@ const ResultsGridComponent: React.FC = () => {
   const status = useAppSelector(selectStatus);
   const error = useAppSelector(selectError);
   const searchParams = useAppSelector(selectSearchParams);
+  const selectedForComparison = useAppSelector(selectSelectedForComparison);
+  const canCompare = useAppSelector(selectCanCompare);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -211,6 +226,14 @@ const ResultsGridComponent: React.FC = () => {
     if (searchParams.origin && searchParams.destination && searchParams.departDate) {
       dispatch(fetchFlights(searchParams));
     }
+  };
+
+  const handleToggleComparison = (flightId: string) => {
+    dispatch(toggleFlightForComparison(flightId));
+  };
+
+  const handleOpenComparison = () => {
+    dispatch(setComparisonMode(true));
   };
 
   if (status === 'loading') {
@@ -262,6 +285,7 @@ const ResultsGridComponent: React.FC = () => {
             <Table>
               <StyledTableHead>
                 <TableRow>
+                  <TableCell padding="checkbox" sx={{ width: 48 }}></TableCell>
                   <TableCell>Airline</TableCell>
                   <TableCell>Route</TableCell>
                   <TableCell>Departure</TableCell>
@@ -275,8 +299,27 @@ const ResultsGridComponent: React.FC = () => {
               <TableBody>
                 {paginatedFlights.map((flight) => {
                   const airlineColor = getAirlineColor(flight.airlineCodes[0]);
+                  const isSelected = selectedForComparison.includes(flight.id);
+                  const isDisabled = !isSelected && selectedForComparison.length >= 3;
+                  
                   return (
                     <StyledTableRow key={flight.id}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isSelected}
+                          onChange={() => handleToggleComparison(flight.id)}
+                          disabled={isDisabled}
+                          sx={{
+                            color: '#cbd5e1',
+                            '&.Mui-checked': {
+                              color: '#14b8a6',
+                            },
+                            '&.Mui-disabled': {
+                              color: '#e2e8f0',
+                            },
+                          }}
+                        />
+                      </TableCell>
                       <TableCell>
                         <Stack direction="row" spacing={1.5} alignItems="center">
                           <AirlineIcon bgcolor={airlineColor}>
@@ -373,6 +416,37 @@ const ResultsGridComponent: React.FC = () => {
             }}
           />
         </Paper>
+
+        {/* Floating Compare Button */}
+        {canCompare && (
+          <Fab
+            color="primary"
+            variant="extended"
+            onClick={handleOpenComparison}
+            sx={{
+              position: 'fixed',
+              bottom: 24,
+              right: 24,
+              background: 'linear-gradient(135deg, #14b8a6 0%, #0f9688 100%)',
+              boxShadow: '0 8px 24px rgba(20, 184, 166, 0.35)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #0f9688 0%, #0d7a6f 100%)',
+                boxShadow: '0 12px 32px rgba(20, 184, 166, 0.45)',
+              },
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 3,
+            }}
+          >
+            <Badge badgeContent={selectedForComparison.length} color="error" sx={{ mr: 1 }}>
+              <CompareArrows />
+            </Badge>
+            Compare Flights
+          </Fab>
+        )}
+
+        {/* Flight Comparison Dialog */}
+        <FlightComparison />
 
         {/* Desktop Drawer */}
         <Drawer
