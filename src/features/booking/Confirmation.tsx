@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -55,7 +55,10 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
     });
   };
 
-  const bookingReference = `E-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+  const bookingReference = useMemo(() => 
+    `E-${Math.random().toString(36).substring(2, 8).toUpperCase()}`, 
+    []
+  );
 
   return (
     <Box sx={{ textAlign: 'center', width: '100%', maxWidth: '100%' }}>

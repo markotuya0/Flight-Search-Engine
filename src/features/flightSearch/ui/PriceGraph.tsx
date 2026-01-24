@@ -20,11 +20,48 @@ import { selectPriceSeries, selectStatus, selectAllFlights } from '../state/sele
 import { PriceGraphSkeleton, EmptyState } from '../../../shared/components';
 import { TrendingUp } from '@mui/icons-material';
 
+// Custom tooltip component - defined outside render to avoid recreation
+const CustomTooltip: React.FC<{ active?: boolean; payload?: any; label?: any }> = ({ 
+  active, 
+  payload, 
+  label 
+}) => {
+  if (active && payload && payload.length) {
+    const hour = label;
+    const price = payload[0].value;
+    
+    const formatHour = (hour: number) => {
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      return `${displayHour}:00 ${period}`;
+    };
+    
+    return (
+      <Box sx={{ 
+        bgcolor: 'background.paper', 
+        p: 1.5, 
+        border: 1, 
+        borderColor: 'divider',
+        borderRadius: 1,
+        boxShadow: 2
+      }}>
+        <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+          {formatHour(hour)}
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#14b8a6', fontWeight: 600 }}>
+          Min Price: ${price}
+        </Typography>
+      </Box>
+    );
+  }
+  return null;
+};
+
 /**
  * Real-time price graph that updates based on filtered flights
  * Shows minimum price by departure hour
  */
-const PriceGraphComponent: React.FC = () => {
+export const PriceGraph: React.FC = () => {
   const priceSeries = useAppSelector(selectPriceSeries);
   const status = useAppSelector(selectStatus);
   const allFlights = useAppSelector(selectAllFlights);
@@ -77,32 +114,6 @@ const PriceGraphComponent: React.FC = () => {
     if (hour === 12) return '12 PM';
     if (hour < 12) return `${hour} AM`;
     return `${hour - 12} PM`;
-  };
-
-  // Custom tooltip formatter
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const hour = label;
-      const price = payload[0].value;
-      return (
-        <Box sx={{ 
-          bgcolor: 'background.paper', 
-          p: 1.5, 
-          border: 1, 
-          borderColor: 'divider',
-          borderRadius: 1,
-          boxShadow: 2
-        }}>
-          <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-            {formatHour(hour)}
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#14b8a6', fontWeight: 600 }}>
-            Min Price: ${price}
-          </Typography>
-        </Box>
-      );
-    }
-    return null;
   };
 
   return (
@@ -226,6 +237,3 @@ const PriceGraphComponent: React.FC = () => {
     </Card>
   );
 };
-
-// Memoize the component to prevent unnecessary re-renders
-export const PriceGraph = React.memo(PriceGraphComponent);

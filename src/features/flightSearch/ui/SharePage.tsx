@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -22,23 +22,12 @@ import {
 import { useAppDispatch } from '../../../app/hooks';
 import { setSearchParams } from '../state/flightSearchSlice';
 
-interface SharedFlightData {
-  flightId: string;
-  origin: string;
-  destination: string;
-  date: string;
-  price: string;
-  airline: string;
-}
-
 export const SharePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [flightData, setFlightData] = useState<SharedFlightData | null>(null);
 
-  useEffect(() => {
-    // Extract flight data from URL parameters
+  const flightData = useMemo(() => {
     const flightId = searchParams.get('flightId');
     const origin = searchParams.get('origin');
     const destination = searchParams.get('destination');
@@ -47,15 +36,16 @@ export const SharePage: React.FC = () => {
     const airline = searchParams.get('airline');
 
     if (flightId && origin && destination && date && price && airline) {
-      setFlightData({
+      return {
         flightId,
         origin,
         destination,
         date,
         price,
         airline,
-      });
+      };
     }
+    return null;
   }, [searchParams]);
 
   const handleSearchSimilar = () => {

@@ -2,13 +2,15 @@
 
 A modern flight search app that actually works. Built by Mark Otuya.
 
+## 🎥 Demo & Links
+
+- **🎬 Video Demo:** [Watch on Loom](https://www.loom.com/share/7718cd3c0c0d4cb9b6e63ce95425b3b3)
+- **🚀 Live App:** [flight-search-engine-six.vercel.app](https://flight-search-engine-six.vercel.app/)
+- **💻 Source Code:** [GitHub Repository](https://github.com/markotuya0/Flight-Search-Engine)
+
 ## What This Is
 
 Real-time flight search with smart API fallback, clean UI, and a complete booking flow. When Amadeus fails (which happens a lot in test mode), it automatically switches to Duffel - users never know the difference.
-
-## Live Demo
-
-🔗 [Try it here](https://your-deployment-url.vercel.app)
 
 ## What I Built
 
