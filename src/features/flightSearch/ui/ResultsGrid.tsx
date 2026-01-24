@@ -22,6 +22,8 @@ import {
   Checkbox,
   Fab,
   Badge,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { 
   FlightTakeoff, 
@@ -32,6 +34,7 @@ import {
   AirlineSeatReclineNormal,
   LocalOffer,
   CompareArrows,
+  Share as ShareIcon,
 } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../../../app/hooks';
 import { 
@@ -46,6 +49,7 @@ import {
 import { fetchFlights, toggleFlightForComparison, setComparisonMode } from '../state/flightSearchSlice';
 import { FlightGridSkeleton, ErrorState, EmptyState, WelcomeState } from '../../../shared/components';
 import { FlightComparison } from './FlightComparison';
+import { generateShareUrl, copyToClipboard } from '../../../shared/utils';
 
 // Helper function to get airline color
 const getAirlineColor = (airlineCode: string): string => {
@@ -203,6 +207,8 @@ const ResultsGridComponent: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [selectedFlight, setSelectedFlight] = React.useState<any>(null);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -234,6 +240,25 @@ const ResultsGridComponent: React.FC = () => {
 
   const handleOpenComparison = () => {
     dispatch(setComparisonMode(true));
+  };
+
+  const handleShare = async () => {
+    if (!selectedFlight) return;
+    
+    const shareUrl = generateShareUrl(selectedFlight);
+    const success = await copyToClipboard(shareUrl);
+    
+    if (success) {
+      setSnackbarMessage('Flight link copied to clipboard!');
+      setSnackbarOpen(true);
+    } else {
+      setSnackbarMessage('Failed to copy link. Please try again.');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   if (status === 'loading') {
@@ -680,9 +705,29 @@ const ResultsGridComponent: React.FC = () => {
                 borderTop: '1px solid #e2e8f0',
                 bgcolor: '#f8fafc',
               }}>
-                <Button
-                  fullWidth
-                  variant="contained"
+                <Stack spacing={2}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    startIcon={<ShareIcon />}
+                    onClick={handleShare}
+                    sx={{
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      borderColor: '#cbd5e1',
+                      color: '#475569',
+                      '&:hover': {
+                        borderColor: '#14b8a6',
+                        bgcolor: '#f0fdfa',
+                        color: '#14b8a6',
+                      },
+                    }}
+                  >
+                    Share Flight
+                  </Button>
+                  <Button
+                    fullWidth
+                    variant="contained"
                   size="large"
                   sx={{
                     textTransform: 'none',
@@ -699,6 +744,7 @@ const ResultsGridComponent: React.FC = () => {
                 >
                   Book Now - {formatPrice(selectedFlight.priceTotal, selectedFlight.currency)}
                 </Button>
+              </Stack>
               </Box>
             </Box>
           )}
@@ -1059,29 +1105,62 @@ const ResultsGridComponent: React.FC = () => {
               borderTop: '1px solid #e2e8f0',
               bgcolor: '#f8fafc',
             }}>
-              <Button
-                fullWidth
-                variant="contained"
-                size="large"
-                sx={{
-                  textTransform: 'none',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  background: 'linear-gradient(135deg, #14b8a6 0%, #0f9688 100%)',
-                  boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)',
-                  py: 1.5,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #0f9688 0%, #0d7a6f 100%)',
+              <Stack spacing={2}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  startIcon={<ShareIcon />}
+                  onClick={handleShare}
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    borderColor: '#cbd5e1',
+                    color: '#475569',
+                    '&:hover': {
+                      borderColor: '#14b8a6',
+                      bgcolor: '#f0fdfa',
+                      color: '#14b8a6',
+                    },
+                  }}
+                >
+                  Share Flight
+                </Button>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    background: 'linear-gradient(135deg, #14b8a6 0%, #0f9688 100%)',
+                    boxShadow: '0 4px 12px rgba(20, 184, 166, 0.25)',
+                    py: 1.5,
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #0f9688 0%, #0d7a6f 100%)',
                     boxShadow: '0 6px 20px rgba(20, 184, 166, 0.35)',
                   },
                 }}
               >
                 Book Now - {formatPrice(selectedFlight.priceTotal, selectedFlight.currency)}
               </Button>
+            </Stack>
             </Box>
           </Box>
         )}
       </Drawer>
+
+      {/* Snackbar for share feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -16,10 +16,12 @@
     "@mui/material": "^7.3.7",
     "@mui/x-data-grid": "^8.25.0",
     "@reduxjs/toolkit": "^2.11.2",
+    "@types/react-window": "^1.8.8",
     "@vercel/node": "^5.5.26",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-redux": "^9.2.0",
+    "react-window": "^2.2.5",
     "recharts": "^3.7.0"
   },
   "devDependencies": {
