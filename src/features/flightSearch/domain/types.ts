@@ -46,6 +46,8 @@ export interface FlightSearchState {
   searchParams: SearchParams;
   filters: Filters;
   allFlights: Flight[];
+  selectedForComparison: string[]; // Flight IDs selected for comparison
+  comparisonMode: boolean; // Whether comparison dialog is open
   status: LoadingStatus;
   error?: string;
   usedFallback?: boolean; // Track if last search used Duffel fallback

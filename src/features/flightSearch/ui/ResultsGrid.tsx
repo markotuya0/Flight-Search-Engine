@@ -173,7 +173,7 @@ const MobileFlightCard = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const ResultsGrid: React.FC = () => {
+const ResultsGridComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -1011,3 +1011,6 @@ export const ResultsGrid: React.FC = () => {
     </Box>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const ResultsGrid = React.memo(ResultsGridComponent);

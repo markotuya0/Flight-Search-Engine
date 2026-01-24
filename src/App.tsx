@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { 
   AppBar, 
   Toolbar, 
@@ -23,7 +23,10 @@ import {
   Twitter,
   Instagram,
 } from '@mui/icons-material';
-import { FlightSearchPage } from './features/flightSearch/ui/FlightSearchPage';
+import { FlightGridSkeleton } from './shared/components';
+
+// Lazy load the FlightSearchPage for code splitting
+const FlightSearchPage = lazy(() => import('./features/flightSearch/ui/FlightSearchPage').then(module => ({ default: module.FlightSearchPage })));
 
 const App: React.FC = () => {
   const theme = useTheme();
@@ -94,7 +97,9 @@ const App: React.FC = () => {
         </Container>
       </AppBar>
       
-      <FlightSearchPage />
+      <Suspense fallback={<Container maxWidth="xl" sx={{ py: 4 }}><FlightGridSkeleton /></Container>}>
+        <FlightSearchPage />
+      </Suspense>
 
       {/* Footer */}
       <Box 

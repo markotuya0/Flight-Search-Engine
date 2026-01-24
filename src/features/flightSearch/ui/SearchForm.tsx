@@ -25,6 +25,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { fetchFlights } from '../state/flightSearchSlice';
 import { selectStatus, selectError } from '../state/selectors';
+import { RateLimiter } from '../../../shared/utils';
 
 // Popular airports for autocomplete
 const popularAirports = [
@@ -153,6 +154,9 @@ export const SearchForm: React.FC = () => {
   const status = useAppSelector(selectStatus);
   const error = useAppSelector(selectError);
 
+  // Rate limiting state
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+
   // Form state
   const [formData, setFormData] = useState({
     origin: null as { code: string; name: string; city: string } | null,
@@ -248,6 +252,34 @@ export const SearchForm: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     
+    // Clear any previous rate limit error
+    setRateLimitError(null);
+    
+    // Check rate limit
+    if (!RateLimiter.canSearch()) {
+      const timeLeft = RateLimiter.getTimeUntilReset();
+      const secondsLeft = Math.ceil(timeLeft / 1000);
+      setRateLimitError(
+        `Rate limit exceeded. Please wait ${secondsLeft} second${secondsLeft !== 1 ? 's' : ''} before searching again.`
+      );
+      
+      // Start countdown timer
+      const interval = setInterval(() => {
+        const remaining = RateLimiter.getTimeUntilReset();
+        if (remaining <= 0) {
+          setRateLimitError(null);
+          clearInterval(interval);
+        } else {
+          const secs = Math.ceil(remaining / 1000);
+          setRateLimitError(
+            `Rate limit exceeded. Please wait ${secs} second${secs !== 1 ? 's' : ''} before searching again.`
+          );
+        }
+      }, 1000);
+      
+      return;
+    }
+    
     // Mark all fields as touched
     setTouched({
       origin: true,
@@ -268,6 +300,9 @@ export const SearchForm: React.FC = () => {
       adults: formData.adults,
     };
 
+    // Record the search for rate limiting
+    RateLimiter.recordSearch();
+    
     dispatch(fetchFlights(searchParams));
   };
 
@@ -301,6 +336,23 @@ export const SearchForm: React.FC = () => {
             }}
           >
             {error || 'Failed to search flights. Please try again.'}
+          </Alert>
+        </Fade>
+      )}
+
+      {rateLimitError && (
+        <Fade in={!!rateLimitError} timeout={400}>
+          <Alert 
+            severity="warning" 
+            icon={<ErrorOutline />}
+            sx={{ 
+              mb: 3,
+              borderRadius: 2,
+              border: '1px solid #fed7aa',
+              backgroundColor: '#fffbeb',
+            }}
+          >
+            {rateLimitError}
           </Alert>
         </Fade>
       )}

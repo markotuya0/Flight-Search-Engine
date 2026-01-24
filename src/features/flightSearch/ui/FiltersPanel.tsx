@@ -104,7 +104,7 @@ const ApplyButton = styled(Button)({
   },
 });
 
-export const FiltersPanel: React.FC<FiltersPanelProps> = ({ isMobile = false }) => {
+const FiltersPanelComponent: React.FC<FiltersPanelProps> = ({ isMobile = false }) => {
   const dispatch = useAppDispatch();
   const allFlights = useAppSelector(selectAllFlights);
   const currentFilters = useAppSelector(selectFilters);
@@ -537,3 +537,6 @@ export const FiltersPanel: React.FC<FiltersPanelProps> = ({ isMobile = false }) 
     </StyledCard>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const FiltersPanel = React.memo(FiltersPanelComponent);

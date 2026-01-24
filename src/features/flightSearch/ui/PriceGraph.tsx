@@ -24,7 +24,7 @@ import { TrendingUp } from '@mui/icons-material';
  * Real-time price graph that updates based on filtered flights
  * Shows minimum price by departure hour
  */
-export const PriceGraph: React.FC = () => {
+const PriceGraphComponent: React.FC = () => {
   const priceSeries = useAppSelector(selectPriceSeries);
   const status = useAppSelector(selectStatus);
   const allFlights = useAppSelector(selectAllFlights);
@@ -197,3 +197,6 @@ export const PriceGraph: React.FC = () => {
     </Card>
   );
 };
+
+// Memoize the component to prevent unnecessary re-renders
+export const PriceGraph = React.memo(PriceGraphComponent);

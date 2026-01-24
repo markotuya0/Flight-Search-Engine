@@ -108,6 +108,8 @@ const initialState: FlightSearchState = {
     sortBy: 'price-asc',
   },
   allFlights: [],
+  selectedForComparison: [], // Flight IDs selected for comparison
+  comparisonMode: false, // Whether comparison dialog is open
   status: 'idle',
   error: undefined,
   usedFallback: false,
@@ -181,6 +183,29 @@ const flightSearchSlice = createSlice({
     clearError: (state) => {
       state.error = undefined;
     },
+    
+    toggleFlightForComparison: (state, action: PayloadAction<string>) => {
+      const flightId = action.payload;
+      const index = state.selectedForComparison.indexOf(flightId);
+      
+      if (index > -1) {
+        // Remove from selection
+        state.selectedForComparison.splice(index, 1);
+      } else {
+        // Add to selection (max 3 flights)
+        if (state.selectedForComparison.length < 3) {
+          state.selectedForComparison.push(flightId);
+        }
+      }
+    },
+    
+    clearComparisonSelection: (state) => {
+      state.selectedForComparison = [];
+    },
+    
+    setComparisonMode: (state, action: PayloadAction<boolean>) => {
+      state.comparisonMode = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -231,6 +256,9 @@ export const {
   setLoading,
   setError,
   clearError,
+  toggleFlightForComparison,
+  clearComparisonSelection,
+  setComparisonMode,
 } = flightSearchSlice.actions;
 
 export default flightSearchSlice.reducer;
