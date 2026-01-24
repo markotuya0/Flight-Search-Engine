@@ -336,7 +336,7 @@ export const ResultsGrid: React.FC = () => {
                             {formatPrice(flight.priceTotal)}
                           </Typography>
                           <Typography variant="caption" sx={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                            / pax
+                            per person
                           </Typography>
                         </Box>
                       </TableCell>
@@ -593,7 +593,7 @@ export const ResultsGrid: React.FC = () => {
                         </Typography>
                       </Stack>
                       <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'center' }}>
-                        Price per passenger
+                        Price per person
                       </Typography>
                     </Stack>
                   </Box>
@@ -667,7 +667,7 @@ export const ResultsGrid: React.FC = () => {
                     {formatPrice(flight.priceTotal)}
                   </Typography>
                   <Typography variant="caption" sx={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                    / pax
+                    per person
                   </Typography>
                 </Box>
               </Stack>
@@ -972,7 +972,7 @@ export const ResultsGrid: React.FC = () => {
                       </Typography>
                     </Stack>
                     <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'center' }}>
-                      Price per passenger
+                      Price per person
                     </Typography>
                   </Stack>
                 </Box>
