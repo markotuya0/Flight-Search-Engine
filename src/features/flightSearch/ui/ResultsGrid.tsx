@@ -50,6 +50,7 @@ import { fetchFlights, toggleFlightForComparison, setComparisonMode } from '../s
 import { FlightGridSkeleton, ErrorState, EmptyState, WelcomeState } from '../../../shared/components';
 import { FlightComparison } from './FlightComparison';
 import { generateShareUrl, copyToClipboard } from '../../../shared/utils';
+import { BookingFlow } from '../../booking';
 
 // Helper function to get airline color
 const getAirlineColor = (airlineCode: string): string => {
@@ -209,6 +210,7 @@ const ResultsGridComponent: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [bookingOpen, setBookingOpen] = React.useState(false);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -259,6 +261,14 @@ const ResultsGridComponent: React.FC = () => {
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
+  };
+
+  const handleBookNow = () => {
+    setBookingOpen(true);
+  };
+
+  const handleBookingClose = () => {
+    setBookingOpen(false);
   };
 
   if (status === 'loading') {
@@ -729,6 +739,7 @@ const ResultsGridComponent: React.FC = () => {
                     fullWidth
                     variant="contained"
                   size="large"
+                  onClick={handleBookNow}
                   sx={{
                     textTransform: 'none',
                     fontSize: '1rem',
@@ -1129,6 +1140,7 @@ const ResultsGridComponent: React.FC = () => {
                   fullWidth
                   variant="contained"
                   size="large"
+                  onClick={handleBookNow}
                   sx={{
                     textTransform: 'none',
                     fontSize: '1rem',
@@ -1161,6 +1173,23 @@ const ResultsGridComponent: React.FC = () => {
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      {/* Booking Flow Dialog */}
+      <BookingFlow
+        open={bookingOpen}
+        onClose={handleBookingClose}
+        flightDetails={
+          selectedFlight
+            ? {
+                origin: selectedFlight.origin.code,
+                destination: selectedFlight.destination.code,
+                departAt: selectedFlight.departAt,
+                price: selectedFlight.priceTotal,
+                currency: selectedFlight.currency,
+              }
+            : undefined
+        }
+      />
     </Box>
   );
 };
