@@ -5,4 +5,12 @@ export * from './rateLimiter';
 export * from './sharing';
 export * from './searchCache';
 export * from './logger';
-export * from './performance';
+export { 
+  performanceDebounce,
+  throttle,
+  requestIdleCallback,
+  cancelIdleCallback,
+  yieldToMain,
+  processInChunks,
+  memoize
+} from './performance';
