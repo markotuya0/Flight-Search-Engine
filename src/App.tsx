@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { 
   AppBar, 
   Toolbar, 
@@ -29,8 +30,9 @@ import { selectBookingOpen, selectSelectedFlightForBooking } from './features/fl
 import { closeBookingFlow } from './features/flightSearch/state/flightSearchSlice';
 import { BookingFlow } from './features/booking';
 
-// Lazy load the FlightSearchPage for code splitting
+// Lazy load components for code splitting
 const FlightSearchPage = lazy(() => import('./features/flightSearch/ui/FlightSearchPage').then(module => ({ default: module.FlightSearchPage })));
+const SharePage = lazy(() => import('./features/flightSearch/ui/SharePage').then(module => ({ default: module.SharePage })));
 
 const App: React.FC = () => {
   const theme = useTheme();
@@ -110,7 +112,10 @@ const App: React.FC = () => {
       </AppBar>
       
       <Suspense fallback={<Container maxWidth="xl" sx={{ py: 4 }}><FlightGridSkeleton /></Container>}>
-        <FlightSearchPage />
+        <Routes>
+          <Route path="/" element={<FlightSearchPage />} />
+          <Route path="/share" element={<SharePage />} />
+        </Routes>
       </Suspense>
 
       {/* Footer */}
