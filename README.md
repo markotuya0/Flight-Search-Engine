@@ -1,6 +1,6 @@
 # ✈️ Flight Search Engine
 
-A modern flight search app that actually works. Built by Mark Otuya.
+A modern, responsive flight search application with intelligent API fallback and real-time filtering.
 
 ## 🎥 Demo & Links
 
@@ -8,50 +8,48 @@ A modern flight search app that actually works. Built by Mark Otuya.
 - **🚀 Live App:** [flight-search-engine-six.vercel.app](https://flight-search-engine-six.vercel.app/)
 - **💻 Source Code:** [GitHub Repository](https://github.com/markotuya0/Flight-Search-Engine)
 
-## What This Is
+## Overview
 
-Real-time flight search with smart API fallback, clean UI, and a complete booking flow. When Amadeus fails (which happens a lot in test mode), it automatically switches to Duffel - users never know the difference.
+Real-time flight search with smart API fallback, clean UI, and complete booking flow. When Amadeus fails (common in test mode), it automatically switches to Duffel - users never know the difference.
 
-## What I Built
+## Key Features
 
-### Core Features
-- **Smart Search** - Search flights with automatic API fallback (Amadeus → Duffel)
-- **Real-time Filtering** - Price, stops, airlines - all instant
-- **Price Graphs** - See price trends at a glance
+- **Smart Search** - Automatic API fallback (Amadeus → Duffel)
+- **Real-time Filtering** - Price, stops, airlines with instant updates
+- **Price Visualization** - Interactive price trend graphs
 - **Flight Comparison** - Compare up to 3 flights side-by-side
 - **Complete Booking Flow** - Passenger info → Seat selection → Payment → Confirmation
-- **Fully Responsive** - Works great on mobile, tablet, and desktop
+- **Fully Responsive** - Optimized for mobile, tablet, and desktop
 
-### Tech Stack
-- React 19 + TypeScript
-- Redux Toolkit for state
-- Material-UI for components
-- Vite for blazing fast builds
-- Vercel for deployment
-- Amadeus & Duffel APIs
+## Tech Stack
+
+- **Frontend:** React 19, TypeScript, Redux Toolkit, Material-UI
+- **Build:** Vite with code splitting and optimization
+- **APIs:** Amadeus (primary), Duffel (fallback)
+- **Deployment:** Vercel with serverless functions
 
 ## Quick Start
 
 ```bash
 # Clone and install
-git clone <repo-url>
+git clone https://github.com/markotuya0/Flight-Search-Engine.git
 cd flight-search-engine
 npm install
 
-# Set up your API keys
+# Set up environment variables
 cp .env.example .env.local
-# Add your Amadeus and Duffel credentials
+# Add your API credentials (see below)
 
-# Run it (needs Vercel CLI for API functions)
+# Run locally (requires Vercel CLI for API functions)
 npm i -g vercel
 vercel dev
 ```
 
 Open http://localhost:3000 and search for flights!
 
-## Environment Variables
+## Environment Setup
 
-Create `.env.local` with:
+Create `.env.local` with your API credentials:
 
 ```bash
 # Amadeus (primary API)
@@ -62,163 +60,67 @@ VITE_AMADEUS_CLIENT_SECRET=your_client_secret
 DUFFEL_ACCESS_TOKEN=your_duffel_token
 ```
 
-Get your keys:
-- Amadeus: https://developers.amadeus.com/
-- Duffel: https://duffel.com/
+**Get API Keys:**
+- [Amadeus for Developers](https://developers.amadeus.com/)
+- [Duffel API](https://duffel.com/)
 
-## How It Works
+## Architecture Highlights
 
-### The Fallback Strategy
-
-Amadeus test environment is unreliable (error 141 all the time). So I built automatic fallback:
-
+### Intelligent Fallback System
 ```
-User searches → Try Amadeus
-                    ↓
-              Amadeus fails?
-                    ↓
-              Try Duffel instead
-                    ↓
-              Show results + info banner
+User Search → Amadeus API
+                ↓ (if fails)
+              Duffel API
+                ↓
+            Normalized Results
 ```
-
-Users get results either way. No failed searches.
 
 ### Project Structure
-
 ```
 src/
 ├── features/
-│   ├── flightSearch/    # Main search feature
-│   │   ├── api/         # Amadeus & Duffel clients
-│   │   ├── domain/      # Business logic
-│   │   ├── state/       # Redux state
-│   │   └── ui/          # React components
-│   └── booking/         # Booking flow
-├── shared/              # Reusable stuff
-└── app/                 # App setup
+│   ├── flightSearch/     # Core search functionality
+│   │   ├── api/          # API clients & normalization
+│   │   ├── domain/       # Business logic
+│   │   ├── state/        # Redux state management
+│   │   └── ui/           # React components
+│   └── booking/          # Booking flow
+├── shared/               # Reusable utilities & components
+└── app/                  # App configuration
 
 api/
 └── duffel/
-    └── search.ts        # Serverless function for Duffel
+    └── search.ts         # Serverless function for Duffel API
 ```
 
-### Key Design Decisions
+## Performance Features
 
-**Why two APIs?**
-- Amadeus is industry standard but test mode sucks
-- Duffel is more reliable for testing
-- Automatic fallback = better UX
+- **Memoized Selectors** - Efficient state derivation
+- **Code Splitting** - Lazy-loaded components
+- **Client-side Caching** - Instant repeated searches
+- **Debounced Inputs** - Smooth filtering experience
+- **Optimized Renders** - React.memo for expensive components
 
-**Why Redux?**
-- Complex state (filters, sorting, comparison)
-- Need derived state (filtered flights)
-- Memoized selectors for performance
-
-**Why Vercel?**
-- Free hosting
-- Serverless functions for API proxy
-- Automatic deployments
-- Fast CDN
-
-## Features Breakdown
-
-### Search & Filters
-- Autocomplete for airports
-- Date picker with validation
-- Price range slider
-- Multi-select filters (stops, airlines)
-- Real-time filtering (no lag)
-
-### Results Display
-- Grid layout with flight cards
-- Sort by price, duration, departure time
-- Loading skeletons
-- Empty states
-
-### Price Visualization
-- Line chart showing price trends
-- Hover for exact prices
-- Responsive sizing
-
-### Flight Comparison
-- Select up to 3 flights
-- Side-by-side modal
-- Highlights best price & fastest
-- Mobile-optimized
-
-### Booking Flow
-4 steps in a modal:
-1. Passenger info (name, email, etc.)
-2. Seat selection (interactive seat map)
-3. Payment (form validation, no real processing)
-4. Confirmation (booking reference, summary)
-
-## Performance Optimizations
-
-- **Memoized selectors** - Filters don't recalculate unnecessarily
-- **Debounced inputs** - Smooth filtering without lag
-- **Code splitting** - Lazy load heavy components
-- **Client-side caching** - Repeated searches are instant
-- **Optimized renders** - React.memo on expensive components
-
-Target metrics achieved:
-- INP < 200ms
-- LCP < 2.5s
-- No console logs in production
-
-## Documentation
-
-Detailed docs for reviewers:
-
-- **[Getting Started](docs/GETTING_STARTED.md)** - Setup and first run
-- **[Architecture](docs/ARCHITECTURE.md)** - How everything fits together
-- **[Features](docs/FEATURES.md)** - Every feature explained
-- **[API Integration](docs/API_INTEGRATION.md)** - Working with Amadeus & Duffel
-
-## Testing
+## Development
 
 ```bash
 # Run tests
 npm test
 
-# Type check
+# Type checking
 npm run type-check
 
-# Lint
+# Linting
 npm run lint
 
-# Build
+# Production build
 npm run build
 ```
 
-## Known Issues
-
-- Amadeus test API returns error 141 frequently (expected, fallback handles it)
-- Seat selection is demo only (no real booking)
-- Payment is simulated (no actual processing)
-
-## What's Next
-
-Ideas for future improvements:
-- Real booking integration
-- User accounts & saved searches
-- Price alerts
-- Multi-city search
-- Baggage info
-- Airline reviews
-
 ## Built By
 
-**Mark Otuya**
-- Solo developer
-- Built this to learn React 19, TypeScript, and API integration
-- Open to feedback and suggestions
-
-## License
-
-MIT - do whatever you want with it
+**Mark Otuya** - Frontend React Engineer Assessment
 
 ---
 
-**Questions?** Open an issue or reach out!
+*Questions? Open an issue or reach out!*

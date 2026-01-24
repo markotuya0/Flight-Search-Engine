@@ -28,8 +28,7 @@ const getAllCacheEntries = (): Record<string, CacheEntry> => {
     const cached = localStorage.getItem(CACHE_KEY);
     if (!cached) return {};
     return JSON.parse(cached);
-  } catch (error) {
-    console.error('Error reading cache:', error);
+  } catch {
     return {};
   }
 };
@@ -40,8 +39,8 @@ const getAllCacheEntries = (): Record<string, CacheEntry> => {
 const saveAllCacheEntries = (entries: Record<string, CacheEntry>): void => {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(entries));
-  } catch (error) {
-    console.error('Error saving cache:', error);
+  } catch {
+    // Silently fail if localStorage is full or unavailable
   }
 };
 
@@ -139,8 +138,8 @@ export const clearFlightCache = (): void => {
   try {
     localStorage.removeItem(CACHE_KEY);
     logger.log('Flight cache cleared');
-  } catch (error) {
-    console.error('Error clearing cache:', error);
+  } catch {
+    // Silently fail if localStorage is unavailable
   }
 };
 

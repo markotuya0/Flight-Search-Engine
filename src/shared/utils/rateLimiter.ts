@@ -111,8 +111,7 @@ export class RateLimiter {
         return { searches: [], lastReset: Date.now() };
       }
       return JSON.parse(data);
-    } catch (error) {
-      console.error('Failed to read rate limit state:', error);
+    } catch {
       return { searches: [], lastReset: Date.now() };
     }
   }
@@ -124,8 +123,7 @@ export class RateLimiter {
   private static setState(state: RateLimitState): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      console.error('Failed to save rate limit state:', error);
+    } catch {
       // Handle quota exceeded or other localStorage errors gracefully
     }
   }

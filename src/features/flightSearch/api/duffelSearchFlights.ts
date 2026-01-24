@@ -61,41 +61,34 @@ export const duffelSearchFlights = async (searchParams: SearchParams): Promise<D
     adults: searchParams.adults || 1,
   });
 
-  try {
-    logger.log('Calling Duffel serverless function...');
-    
-    // Call our serverless function instead of Duffel directly
-    const response = await fetch('/api/duffel/search', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        origin: searchParams.origin,
-        destination: searchParams.destination,
-        departDate: searchParams.departDate,
-        adults: searchParams.adults || 1,
-      }),
-    });
+  logger.log('Calling Duffel serverless function...');
+  
+  // Call our serverless function instead of Duffel directly
+  const response = await fetch('/api/duffel/search', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      origin: searchParams.origin,
+      destination: searchParams.destination,
+      departDate: searchParams.departDate,
+      adults: searchParams.adults || 1,
+    }),
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Duffel serverless function failed:', response.status, errorData);
-      throw new Error(`Duffel search failed: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    const offers: DuffelOffer[] = data.data || [];
-
-    if (offers.length === 0) {
-      logger.warn('No offers found from Duffel');
-    } else {
-      logger.log(`Found ${offers.length} Duffel offers`);
-    }
-
-    return offers;
-  } catch (error) {
-    console.error('Duffel search failed:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Duffel search failed: ${response.status} ${response.statusText}`);
   }
+
+  const data = await response.json();
+  const offers: DuffelOffer[] = data.data || [];
+
+  if (offers.length === 0) {
+    logger.warn('No offers found from Duffel');
+  } else {
+    logger.log(`Found ${offers.length} Duffel offers`);
+  }
+
+  return offers;
 };

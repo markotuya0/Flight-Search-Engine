@@ -222,8 +222,7 @@ export const normalizeDuffelOffer = (offer: DuffelOffer): Flight | null => {
     };
 
     return flight;
-  } catch (error) {
-    console.error(`Error normalizing Duffel offer ${offer.id}:`, error);
+  } catch {
     return null;
   }
 };
