@@ -75,96 +75,182 @@ const ComparisonCard: React.FC<ComparisonCardProps> = ({ flight, isBestPrice, is
         borderRadius: 2,
         position: 'relative',
         overflow: 'visible',
+        display: 'flex',
+        flexDirection: 'column',
+        mt: isBestPrice ? { xs: 1.5, sm: 2 } : 0,
       }}
     >
       {isBestPrice && (
         <Chip
           label="Best Price"
           size="small"
-          icon={<CheckCircle sx={{ fontSize: 16 }} />}
+          icon={<CheckCircle sx={{ fontSize: { xs: 12, sm: 14 } }} />}
           sx={{
             position: 'absolute',
-            top: -12,
+            top: { xs: -10, sm: -12 },
             left: '50%',
             transform: 'translateX(-50%)',
             bgcolor: '#14b8a6',
             color: '#ffffff',
             fontWeight: 600,
-            fontSize: '0.75rem',
+            fontSize: { xs: '0.65rem', sm: '0.7rem' },
+            height: { xs: 18, sm: 20 },
+            zIndex: 1,
           }}
         />
       )}
       
-      <Box sx={{ p: 3 }}>
-        <Stack spacing={3}>
+      <Box sx={{ p: { xs: 1.5, sm: 2 }, flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Stack spacing={{ xs: 1, sm: 1.5 }} sx={{ flex: 1 }}>
           {/* Airline */}
           <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a', mb: 0.5 }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 700, 
+                color: '#0f172a', 
+                mb: 0.25,
+                fontSize: { xs: '0.875rem', sm: '1rem' },
+                lineHeight: 1.2
+              }}
+            >
               {flight.airlineCodes.join(', ')}
             </Typography>
-            <Typography variant="caption" sx={{ color: '#64748b' }}>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: '#64748b',
+                fontSize: { xs: '0.65rem', sm: '0.7rem' }
+              }}
+            >
               Flight {flight.id.slice(0, 8)}
             </Typography>
           </Box>
 
-          <Divider />
+          <Divider sx={{ my: { xs: 0.5, sm: 0.75 } }} />
 
           {/* Price */}
           <Box sx={{ textAlign: 'center' }}>
-            <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="center" sx={{ mb: 0.5 }}>
-              <AttachMoney sx={{ fontSize: 20, color: '#64748b' }} />
-              <Typography variant="caption" sx={{ color: '#64748b', textTransform: 'uppercase', fontSize: '0.7rem' }}>
+            <Stack direction="row" spacing={0.5} alignItems="center" justifyContent="center" sx={{ mb: 0.25 }}>
+              <AttachMoney sx={{ fontSize: { xs: 14, sm: 16 }, color: '#64748b' }} />
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: '#64748b', 
+                  textTransform: 'uppercase', 
+                  fontSize: { xs: '0.6rem', sm: '0.65rem' }
+                }}
+              >
                 Price
               </Typography>
             </Stack>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: '#f97316' }}>
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                fontWeight: 700, 
+                color: '#f97316',
+                fontSize: { xs: '1.5rem', sm: '1.75rem' },
+                lineHeight: 1.2
+              }}
+            >
               {formatPrice(flight.priceTotal, flight.currency)}
             </Typography>
           </Box>
 
-          <Divider />
+          <Divider sx={{ my: { xs: 0.5, sm: 0.75 } }} />
 
           {/* Departure */}
           <Box>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-              <FlightTakeoff sx={{ fontSize: 18, color: '#14b8a6' }} />
-              <Typography variant="caption" sx={{ color: '#64748b', textTransform: 'uppercase', fontSize: '0.7rem' }}>
+            <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 0.5 }}>
+              <FlightTakeoff sx={{ fontSize: { xs: 14, sm: 16 }, color: '#14b8a6' }} />
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: '#64748b', 
+                  textTransform: 'uppercase', 
+                  fontSize: { xs: '0.6rem', sm: '0.65rem' }
+                }}
+              >
                 Departure
               </Typography>
             </Stack>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a', mb: 0.5 }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 700, 
+                color: '#0f172a', 
+                mb: 0.25,
+                fontSize: { xs: '0.875rem', sm: '1rem' },
+                lineHeight: 1.2
+              }}
+            >
               {formatTime(flight.departAt)}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#475569' }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#475569',
+                fontSize: { xs: '0.7rem', sm: '0.8rem' }
+              }}
+            >
               {flight.origin.code} - {flight.origin.city}
             </Typography>
           </Box>
 
           {/* Arrival */}
           <Box>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-              <FlightLand sx={{ fontSize: 18, color: '#f59e0b' }} />
-              <Typography variant="caption" sx={{ color: '#64748b', textTransform: 'uppercase', fontSize: '0.7rem' }}>
+            <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 0.5 }}>
+              <FlightLand sx={{ fontSize: { xs: 14, sm: 16 }, color: '#f59e0b' }} />
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: '#64748b', 
+                  textTransform: 'uppercase', 
+                  fontSize: { xs: '0.6rem', sm: '0.65rem' }
+                }}
+              >
                 Arrival
               </Typography>
             </Stack>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a', mb: 0.5 }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 700, 
+                color: '#0f172a', 
+                mb: 0.25,
+                fontSize: { xs: '0.875rem', sm: '1rem' },
+                lineHeight: 1.2
+              }}
+            >
               {formatTime(flight.arriveAt)}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#475569' }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#475569',
+                fontSize: { xs: '0.7rem', sm: '0.8rem' }
+              }}
+            >
               {flight.destination.code} - {flight.destination.city}
             </Typography>
           </Box>
 
-          <Divider />
+          <Divider sx={{ my: { xs: 0.5, sm: 0.75 } }} />
 
           {/* Duration & Stops */}
           <Box>
-            <Stack spacing={2}>
-              <Box>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
-                  <AccessTime sx={{ fontSize: 16, color: '#64748b' }} />
-                  <Typography variant="caption" sx={{ color: '#64748b', textTransform: 'uppercase', fontSize: '0.7rem' }}>
+            <Stack direction="row" spacing={2} justifyContent="space-between">
+              <Box sx={{ flex: 1 }}>
+                <Stack direction="row" spacing={0.5} alignItems="center" sx={{ mb: 0.25 }} flexWrap="wrap">
+                  <AccessTime sx={{ fontSize: { xs: 12, sm: 14 }, color: '#64748b' }} />
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      color: '#64748b', 
+                      textTransform: 'uppercase', 
+                      fontSize: { xs: '0.6rem', sm: '0.65rem' }
+                    }}
+                  >
                     Duration
                   </Typography>
                   {isFastest && (
@@ -172,30 +258,47 @@ const ComparisonCard: React.FC<ComparisonCardProps> = ({ flight, isBestPrice, is
                       label="Fastest"
                       size="small"
                       sx={{
-                        height: 18,
-                        fontSize: '0.65rem',
+                        height: { xs: 14, sm: 16 },
+                        fontSize: { xs: '0.55rem', sm: '0.6rem' },
                         bgcolor: '#dbeafe',
                         color: '#1e40af',
                         fontWeight: 600,
+                        '& .MuiChip-label': { px: 0.5 }
                       }}
                     />
                   )}
                 </Stack>
-                <Typography variant="body1" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: '#0f172a',
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                  }}
+                >
                   {formatDuration(flight.durationMinutes)}
                 </Typography>
               </Box>
 
-              <Box>
-                <Typography variant="caption" sx={{ color: '#64748b', textTransform: 'uppercase', fontSize: '0.7rem', display: 'block', mb: 0.5 }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    color: '#64748b', 
+                    textTransform: 'uppercase', 
+                    fontSize: { xs: '0.6rem', sm: '0.65rem' }, 
+                    display: 'block', 
+                    mb: 0.25 
+                  }}
+                >
                   Stops
                 </Typography>
                 <Chip
                   label={getStopsDisplay(flight.stops)}
                   size="small"
                   sx={{
-                    height: 24,
-                    fontSize: '0.75rem',
+                    height: { xs: 18, sm: 20 },
+                    fontSize: { xs: '0.65rem', sm: '0.7rem' },
                     fontWeight: 500,
                     backgroundColor: flight.stops === 0 ? '#d1fae5' : '#f1f5f9',
                     color: flight.stops === 0 ? '#065f46' : '#64748b',
@@ -212,7 +315,9 @@ const ComparisonCard: React.FC<ComparisonCardProps> = ({ flight, isBestPrice, is
             sx={{
               textTransform: 'none',
               fontWeight: 600,
-              py: 1.5,
+              py: { xs: 0.75, sm: 1 },
+              fontSize: { xs: '0.8rem', sm: '0.875rem' },
+              mt: 'auto !important',
               ...(isBestPrice
                 ? {
                     background: 'linear-gradient(135deg, #14b8a6 0%, #0f9688 100%)',
@@ -274,6 +379,11 @@ export const FlightComparison: React.FC = () => {
       PaperProps={{
         sx: {
           borderRadius: isMobile ? 0 : 2,
+          maxHeight: isMobile ? '100vh' : '90vh',
+          height: isMobile ? '100vh' : 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          m: isMobile ? 0 : 2,
         },
       }}
     >
@@ -283,15 +393,29 @@ export const FlightComparison: React.FC = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
           borderBottom: '1px solid #e2e8f0',
-          py: 2,
-          px: 3,
+          py: { xs: 1.5, sm: 2 },
+          px: { xs: 2, sm: 3 },
+          flexShrink: 0,
         }}
       >
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a' }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              fontWeight: 700, 
+              color: '#0f172a',
+              fontSize: { xs: '1rem', sm: '1.25rem' }
+            }}
+          >
             Compare Flights
           </Typography>
-          <Typography variant="caption" sx={{ color: '#64748b' }}>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              color: '#64748b',
+              fontSize: { xs: '0.7rem', sm: '0.75rem' }
+            }}
+          >
             {flights.length} flight{flights.length !== 1 ? 's' : ''} selected
           </Typography>
         </Box>
@@ -300,21 +424,66 @@ export const FlightComparison: React.FC = () => {
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3 }}>
+      <DialogContent 
+        sx={{ 
+          p: { xs: 1.5, sm: 2, md: 3 },
+          flex: 1,
+          overflow: 'auto',
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f5f9',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#cbd5e1',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: '#94a3b8',
+          },
+        }}
+      >
         {flights.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
-            <Typography variant="h6" sx={{ color: '#64748b', mb: 1 }}>
+          <Box sx={{ textAlign: 'center', py: { xs: 4, sm: 8 } }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: '#64748b', 
+                mb: 1,
+                fontSize: { xs: '1rem', sm: '1.25rem' }
+              }}
+            >
               No flights selected
             </Typography>
-            <Typography variant="body2" sx={{ color: '#94a3b8' }}>
+            <Typography 
+              variant="body2" 
+              sx={{ 
+                color: '#94a3b8',
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}
+            >
               Select 2-3 flights to compare
             </Typography>
           </Box>
         ) : (
           <>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: flights.length === 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)' }, gap: 3 }}>
+            <Box 
+              sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: { 
+                  xs: '1fr', 
+                  sm: flights.length === 2 ? 'repeat(2, 1fr)' : '1fr',
+                  md: flights.length === 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)' 
+                }, 
+                gap: { xs: 1.5, sm: 2, md: 2.5 },
+                width: '100%',
+                alignItems: 'stretch',
+                pt: { xs: 1.5, sm: 2 },
+              }}
+            >
               {flights.map((flight) => (
-                <Box key={flight.id}>
+                <Box key={flight.id} sx={{ minWidth: 0, display: 'flex' }}>
                   <ComparisonCard
                     flight={flight}
                     isBestPrice={bestPriceFlight?.id === flight.id}
@@ -324,7 +493,7 @@ export const FlightComparison: React.FC = () => {
               ))}
             </Box>
 
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ mt: { xs: 2, sm: 2.5, md: 3 }, display: 'flex', justifyContent: 'center' }}>
               <Button
                 variant="outlined"
                 onClick={handleClearAndClose}
@@ -333,6 +502,9 @@ export const FlightComparison: React.FC = () => {
                   fontWeight: 600,
                   color: '#64748b',
                   borderColor: '#e2e8f0',
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                  px: { xs: 2, sm: 3 },
+                  py: { xs: 0.75, sm: 1 },
                   '&:hover': {
                     borderColor: '#cbd5e1',
                     bgcolor: '#f8fafc',

@@ -39,6 +39,10 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
   const [passengerData, setPassengerData] = useState<any>(null);
   const [selectedSeat, setSelectedSeat] = useState<string | null>(null);
   const [paymentData, setPaymentData] = useState<any>(null);
+  
+  // Refs to access form validation
+  const passengerFormRef = React.useRef<any>(null);
+  const paymentFormRef = React.useRef<any>(null);
 
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
@@ -58,27 +62,46 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
 
   const handlePassengerSubmit = (data: any) => {
     setPassengerData(data);
-    handleNext();
   };
 
   const handleSeatSelect = (seat: string) => {
     setSelectedSeat(seat);
-    handleNext();
   };
 
   const handlePaymentSubmit = (data: any) => {
     setPaymentData(data);
-    handleNext();
+  };
+
+  const handleContinue = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (activeStep === 0) {
+      // Passenger form - trigger validation
+      if (passengerFormRef.current?.validate()) {
+        handleNext();
+      }
+    } else if (activeStep === 1) {
+      // Seat selection - just advance if seat is selected
+      if (selectedSeat) {
+        handleNext();
+      }
+    } else if (activeStep === 2) {
+      // Payment form - trigger validation
+      if (paymentFormRef.current?.validate()) {
+        handleNext();
+      }
+    }
   };
 
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
-        return <PassengerForm onSubmit={handlePassengerSubmit} />;
+        return <PassengerForm ref={passengerFormRef} onSubmit={handlePassengerSubmit} />;
       case 1:
         return <SeatSelection onSelect={handleSeatSelect} selectedSeat={selectedSeat} />;
       case 2:
-        return <PaymentForm onSubmit={handlePaymentSubmit} flightDetails={flightDetails} />;
+        return <PaymentForm ref={paymentFormRef} onSubmit={handlePaymentSubmit} flightDetails={flightDetails} />;
       case 3:
         return (
           <Confirmation
@@ -102,22 +125,29 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
       fullWidth
       fullScreen={isMobile}
       sx={{
-        zIndex: 9999, // Highest z-index to appear above everything
+        '& .MuiDialog-container': {
+          zIndex: 9999,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
       }}
       PaperProps={{
         sx: {
           borderRadius: isMobile ? 0 : 2,
-          minHeight: isMobile ? '100vh' : '600px',
+          maxHeight: isMobile ? '100vh' : '90vh',
+          height: isMobile ? '100vh' : 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          m: isMobile ? 0 : 2,
+          width: '100%',
         },
       }}
       BackdropProps={{
         sx: {
           backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          zIndex: 9998,
         },
       }}
       disableEscapeKeyDown={false}
-      disablePortal={false}
     >
       {/* Header */}
       <Box
@@ -125,11 +155,19 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          p: 3,
+          p: { xs: 1.5, sm: 2 },
           borderBottom: '1px solid #e2e8f0',
+          flexShrink: 0,
         }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 700, color: '#0f172a' }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 700, 
+            color: '#0f172a', 
+            fontSize: { xs: '1rem', sm: '1.125rem' } 
+          }}
+        >
           Complete Your Booking
         </Typography>
         <IconButton onClick={handleClose} size="small">
@@ -138,14 +176,18 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
       </Box>
 
       {/* Stepper */}
-      <Box sx={{ px: 3, pt: 3 }}>
-        <Stepper activeStep={activeStep} alternativeLabel={isMobile}>
+      <Box sx={{ px: { xs: 1, sm: 2 }, pt: { xs: 1.5, sm: 2 }, pb: 1, flexShrink: 0 }}>
+        <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel
                 sx={{
                   '& .MuiStepLabel-label': {
-                    fontSize: isMobile ? '0.75rem' : '0.875rem',
+                    fontSize: { xs: '0.65rem', sm: '0.75rem', md: '0.875rem' },
+                    mt: { xs: 0.5, sm: 1 },
+                  },
+                  '& .MuiStepIcon-root': {
+                    fontSize: { xs: '1.25rem', sm: '1.5rem' },
                   },
                   '& .MuiStepIcon-root.Mui-active': {
                     color: '#14b8a6',
@@ -163,8 +205,31 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
       </Box>
 
       {/* Content */}
-      <DialogContent sx={{ p: 3, flex: 1 }}>
-        {getStepContent(activeStep)}
+      <DialogContent 
+        sx={{ 
+          p: { xs: 1.5, sm: 2 },
+          flex: 1,
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f5f9',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#cbd5e1',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: '#94a3b8',
+          },
+        }}
+      >
+        <Box sx={{ maxWidth: '100%', width: '100%' }}>
+          {getStepContent(activeStep)}
+        </Box>
       </DialogContent>
 
       {/* Footer - Only show for steps 0-2 */}
@@ -173,9 +238,11 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
-            p: 3,
+            p: { xs: 1.5, sm: 2 },
             borderTop: '1px solid #e2e8f0',
             bgcolor: '#f8fafc',
+            flexShrink: 0,
+            gap: 1,
           }}
         >
           <Button
@@ -185,6 +252,8 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
               textTransform: 'none',
               fontWeight: 600,
               color: '#64748b',
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              minWidth: { xs: '70px', sm: '80px' },
               '&:disabled': {
                 color: '#cbd5e1',
               },
@@ -193,17 +262,15 @@ export const BookingFlow: React.FC<BookingFlowProps> = ({ open, onClose, flightD
             Back
           </Button>
           <Button
-            onClick={handleNext}
+            onClick={handleContinue}
             variant="contained"
-            disabled={
-              (activeStep === 1 && !selectedSeat) ||
-              (activeStep === 0 && !passengerData)
-            }
+            disabled={activeStep === 1 && !selectedSeat}
             sx={{
               textTransform: 'none',
               fontWeight: 600,
               background: 'linear-gradient(135deg, #14b8a6 0%, #0f9688 100%)',
-              px: 4,
+              px: { xs: 2, sm: 4 },
+              fontSize: { xs: '0.875rem', sm: '1rem' },
               '&:hover': {
                 background: 'linear-gradient(135deg, #0f9688 0%, #0d7a6f 100%)',
               },

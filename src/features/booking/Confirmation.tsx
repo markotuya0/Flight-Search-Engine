@@ -58,27 +58,52 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
   const bookingReference = `E-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
   return (
-    <Box sx={{ textAlign: 'center' }}>
+    <Box sx={{ textAlign: 'center', width: '100%', maxWidth: '100%' }}>
       {/* Success Icon */}
       <Box
         sx={{
           display: 'inline-flex',
-          p: 2,
+          p: { xs: 1, sm: 1.5 },
           borderRadius: '50%',
           bgcolor: '#d1fae5',
-          mb: 3,
+          mb: { xs: 1.5, sm: 2 },
         }}
       >
-        <CheckCircle sx={{ fontSize: 64, color: '#14b8a6' }} />
+        <CheckCircle sx={{ fontSize: { xs: 40, sm: 56 }, color: '#14b8a6' }} />
       </Box>
 
-      <Typography variant="h4" sx={{ fontWeight: 700, color: '#0f172a', mb: 1 }}>
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          fontWeight: 700, 
+          color: '#0f172a', 
+          mb: 0.5,
+          fontSize: { xs: '1.25rem', sm: '1.75rem' },
+          lineHeight: 1.2
+        }}
+      >
         Booking Confirmed!
       </Typography>
-      <Typography variant="body1" sx={{ color: '#64748b', mb: 1 }}>
+      <Typography 
+        variant="body1" 
+        sx={{ 
+          color: '#64748b', 
+          mb: 0.5,
+          fontSize: { xs: '0.8rem', sm: '0.9rem' }
+        }}
+      >
         Your flight has been successfully booked
       </Typography>
-      <Typography variant="h6" sx={{ color: '#14b8a6', fontWeight: 600, mb: 4 }}>
+      <Typography 
+        variant="h6" 
+        sx={{ 
+          color: '#14b8a6', 
+          fontWeight: 600, 
+          mb: { xs: 1.5, sm: 2 },
+          fontSize: { xs: '0.9rem', sm: '1.1rem' },
+          wordBreak: 'break-word'
+        }}
+      >
         Booking Reference: {bookingReference}
       </Typography>
 
@@ -86,46 +111,96 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
       <Paper
         elevation={0}
         sx={{
-          p: 3,
+          p: { xs: 1.5, sm: 2 },
           bgcolor: '#f8fafc',
           border: '1px solid #e2e8f0',
           borderRadius: 2,
           textAlign: 'left',
-          mb: 3,
+          mb: { xs: 1.5, sm: 2 },
+          width: '100%',
+          boxSizing: 'border-box',
         }}
       >
-        <Stack spacing={3}>
+        <Stack spacing={{ xs: 1.5, sm: 2 }}>
           {/* Flight Details */}
           {flightDetails && (
             <Box>
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                <FlightTakeoff sx={{ fontSize: 20, color: '#14b8a6' }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: { xs: 1, sm: 1.5 } }}>
+                <FlightTakeoff sx={{ fontSize: { xs: 16, sm: 18 }, color: '#14b8a6' }} />
+                <Typography 
+                  variant="subtitle2" 
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: '#0f172a',
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  }}
+                >
                   Flight Details
                 </Typography>
               </Stack>
-              <Stack spacing={1}>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="body2" sx={{ color: '#64748b' }}>
+              <Stack spacing={0.75}>
+                <Stack direction="row" justifyContent="space-between" gap={2}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                    }}
+                  >
                     Route
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#0f172a',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                      textAlign: 'right'
+                    }}
+                  >
                     {flightDetails.origin} → {flightDetails.destination}
                   </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="body2" sx={{ color: '#64748b' }}>
+                <Stack direction="row" justifyContent="space-between" gap={2}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                    }}
+                  >
                     Date
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#0f172a',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                      textAlign: 'right'
+                    }}
+                  >
                     {formatDate(flightDetails.departAt)}
                   </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="body2" sx={{ color: '#64748b' }}>
+                <Stack direction="row" justifyContent="space-between" gap={2}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                    }}
+                  >
                     Total Paid
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#14b8a6' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#14b8a6',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                    }}
+                  >
                     {formatPrice(flightDetails.price, flightDetails.currency)}
                   </Typography>
                 </Stack>
@@ -138,26 +213,63 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
           {/* Passenger Details */}
           {passengerData && (
             <Box>
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                <Person sx={{ fontSize: 20, color: '#14b8a6' }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: { xs: 1, sm: 1.5 } }}>
+                <Person sx={{ fontSize: { xs: 16, sm: 18 }, color: '#14b8a6' }} />
+                <Typography 
+                  variant="subtitle2" 
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: '#0f172a',
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  }}
+                >
                   Passenger
                 </Typography>
               </Stack>
-              <Stack spacing={1}>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="body2" sx={{ color: '#64748b' }}>
+              <Stack spacing={0.75}>
+                <Stack direction="row" justifyContent="space-between" gap={2}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                    }}
+                  >
                     Name
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#0f172a',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                      textAlign: 'right',
+                      wordBreak: 'break-word'
+                    }}
+                  >
                     {passengerData.firstName} {passengerData.lastName}
                   </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between">
-                  <Typography variant="body2" sx={{ color: '#64748b' }}>
+                <Stack direction="row" justifyContent="space-between" gap={2}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: '#64748b',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                    }}
+                  >
                     Email
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: 600, 
+                      color: '#0f172a',
+                      fontSize: { xs: '0.75rem', sm: '0.8rem' },
+                      textAlign: 'right',
+                      wordBreak: 'break-word'
+                    }}
+                  >
                     {passengerData.email}
                   </Typography>
                 </Stack>
@@ -170,13 +282,27 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
           {/* Seat */}
           {selectedSeat && (
             <Box>
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                <EventSeat sx={{ fontSize: 20, color: '#14b8a6' }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: { xs: 1, sm: 1.5 } }}>
+                <EventSeat sx={{ fontSize: { xs: 16, sm: 18 }, color: '#14b8a6' }} />
+                <Typography 
+                  variant="subtitle2" 
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: '#0f172a',
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  }}
+                >
                   Seat Assignment
                 </Typography>
               </Stack>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#0f172a',
+                  fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                }}
+              >
                 Seat {selectedSeat}
               </Typography>
             </Box>
@@ -187,13 +313,27 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
           {/* Payment */}
           {paymentData && (
             <Box>
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                <CreditCard sx={{ fontSize: 20, color: '#14b8a6' }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: { xs: 1, sm: 1.5 } }}>
+                <CreditCard sx={{ fontSize: { xs: 16, sm: 18 }, color: '#14b8a6' }} />
+                <Typography 
+                  variant="subtitle2" 
+                  sx={{ 
+                    fontWeight: 600, 
+                    color: '#0f172a',
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' }
+                  }}
+                >
                   Payment Method
                 </Typography>
               </Stack>
-              <Typography variant="body2" sx={{ fontWeight: 600, color: '#0f172a' }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#0f172a',
+                  fontSize: { xs: '0.75rem', sm: '0.8rem' }
+                }}
+              >
                 •••• •••• •••• {paymentData.cardNumber.slice(-4)}
               </Typography>
             </Box>
@@ -204,16 +344,32 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
       {/* Email Notification */}
       <Box
         sx={{
-          p: 2,
+          p: { xs: 1.25, sm: 1.5 },
           bgcolor: '#fffbeb',
           border: '1px solid #fef3c7',
           borderRadius: 2,
-          mb: 3,
+          mb: { xs: 1.5, sm: 2 },
+          width: '100%',
+          boxSizing: 'border-box',
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-          <Email sx={{ fontSize: 18, color: '#f59e0b' }} />
-          <Typography variant="body2" sx={{ color: '#92400e' }}>
+        <Stack 
+          direction="row" 
+          spacing={1} 
+          alignItems="center" 
+          justifyContent="center"
+          flexWrap="wrap"
+          sx={{ textAlign: 'center' }}
+        >
+          <Email sx={{ fontSize: { xs: 14, sm: 16 }, color: '#f59e0b' }} />
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: '#92400e',
+              fontSize: { xs: '0.75rem', sm: '0.8rem' },
+              wordBreak: 'break-word'
+            }}
+          >
             Confirmation email sent to {passengerData?.email}
           </Typography>
         </Stack>
@@ -229,7 +385,8 @@ export const Confirmation: React.FC<ConfirmationProps> = ({
           textTransform: 'none',
           fontWeight: 600,
           background: 'linear-gradient(135deg, #14b8a6 0%, #0f9688 100%)',
-          py: 1.5,
+          py: { xs: 1, sm: 1.25 },
+          fontSize: { xs: '0.8rem', sm: '0.9rem' },
           '&:hover': {
             background: 'linear-gradient(135deg, #0f9688 0%, #0d7a6f 100%)',
           },
