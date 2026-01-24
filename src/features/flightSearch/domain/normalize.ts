@@ -1,5 +1,6 @@
 import type { Flight, Airport } from './types';
 import type { AmadeusFlightOffer, AmadeusFlightSearchResponse } from '../api/searchFlights';
+import { logger } from '../../../shared/utils/logger';
 
 // Duffel offer interface for normalization
 interface DuffelOffer {
@@ -107,12 +108,12 @@ export const normalizeAmadeusResponse = (response: AmadeusFlightSearchResponse):
   const prices = flights.map(f => f.priceTotal);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
-  console.log(`Normalized ${flights.length} flights. Price range: $${minPrice} - $${maxPrice}`);
+  logger.log(`Normalized ${flights.length} flights. Price range: $${minPrice} - $${maxPrice}`);
   
   // Log any suspicious prices
   const suspiciousPrices = flights.filter(f => f.priceTotal > 10000 || f.priceTotal < 0);
   if (suspiciousPrices.length > 0) {
-    console.warn('Found suspicious prices:', suspiciousPrices.map(f => ({ id: f.id, price: f.priceTotal })));
+    logger.warn('Found suspicious prices:', suspiciousPrices.map(f => ({ id: f.id, price: f.priceTotal })));
   }
   
   return flights;
@@ -154,7 +155,7 @@ export const normalizeDuffelOffer = (offer: DuffelOffer): Flight | null => {
     // Get the outbound slice (first slice)
     const outboundSlice = offer.slices[0];
     if (!outboundSlice || !outboundSlice.segments || outboundSlice.segments.length === 0) {
-      console.warn(`Duffel offer ${offer.id} missing outbound slice or segments`);
+      logger.warn(`Duffel offer ${offer.id} missing outbound slice or segments`);
       return null;
     }
 
@@ -163,17 +164,17 @@ export const normalizeDuffelOffer = (offer: DuffelOffer): Flight | null => {
 
     // Validate required fields
     if (!firstSegment.origin?.iata_code || !lastSegment.destination?.iata_code) {
-      console.warn(`Duffel offer ${offer.id} missing required airport codes`);
+      logger.warn(`Duffel offer ${offer.id} missing required airport codes`);
       return null;
     }
 
     if (!firstSegment.departing_at || !lastSegment.arriving_at) {
-      console.warn(`Duffel offer ${offer.id} missing required timestamps`);
+      logger.warn(`Duffel offer ${offer.id} missing required timestamps`);
       return null;
     }
 
     if (!offer.total_amount || !offer.total_currency) {
-      console.warn(`Duffel offer ${offer.id} missing price information`);
+      logger.warn(`Duffel offer ${offer.id} missing price information`);
       return null;
     }
 
@@ -240,7 +241,7 @@ export const normalizeDuffelOffers = (offers: DuffelOffer[]): Flight[] => {
     const prices = flights.map(f => f.priceTotal);
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
-    console.log(`Normalized ${flights.length} Duffel flights. Price range: ${minPrice} - ${maxPrice}`);
+    logger.log(`Normalized ${flights.length} Duffel flights. Price range: ${minPrice} - ${maxPrice}`);
   }
   
   return flights;

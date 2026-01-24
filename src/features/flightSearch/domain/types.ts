@@ -37,6 +37,7 @@ export interface Filters {
   stops: number[]; // Array of allowed stop counts (0 = non-stop, 1 = 1 stop, etc.)
   airlines: string[]; // Array of airline codes
   price: PriceFilter;
+  sortBy: 'price-asc' | 'price-desc' | 'duration-asc' | 'departure-asc';
 }
 
 export type LoadingStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -45,6 +46,10 @@ export interface FlightSearchState {
   searchParams: SearchParams;
   filters: Filters;
   allFlights: Flight[];
+  selectedForComparison: string[]; // Flight IDs selected for comparison
+  comparisonMode: boolean; // Whether comparison dialog is open
+  bookingOpen: boolean; // Whether booking flow is open
+  selectedFlightForBooking: Flight | null; // Flight selected for booking
   status: LoadingStatus;
   error?: string;
   usedFallback?: boolean; // Track if last search used Duffel fallback

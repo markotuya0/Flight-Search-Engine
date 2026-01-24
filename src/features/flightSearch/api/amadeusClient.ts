@@ -3,6 +3,8 @@
  * Handles OAuth authentication and token management
  */
 
+import { logger } from '../../../shared/utils/logger';
+
 interface AmadeusToken {
   access_token: string;
   token_type: string;
@@ -72,7 +74,7 @@ class AmadeusClient {
       expiresAt,
     };
 
-    console.log('Amadeus token obtained, expires at:', new Date(expiresAt).toISOString());
+    logger.log('Amadeus token obtained, expires at:', new Date(expiresAt).toISOString());
   }
 
   /**

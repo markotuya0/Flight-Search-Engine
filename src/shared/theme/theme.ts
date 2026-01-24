@@ -1,17 +1,39 @@
 import { createTheme } from '@mui/material/styles';
+import { designTokens } from './designTokens';
 
 declare module '@mui/material/styles' {
   interface Theme {
+    designTokens: typeof designTokens;
     status: {
       danger: string;
     };
   }
 
   interface ThemeOptions {
+    designTokens?: typeof designTokens;
     status?: {
       danger?: string;
     };
   }
+
+  interface Palette {
+    semantic: {
+      success: string;
+      warning: string;
+      error: string;
+      info: string;
+    };
+  }
+
+  interface PaletteOptions {
+    semantic?: {
+      success?: string;
+      warning?: string;
+      error?: string;
+      info?: string;
+    };
+  }
+
   interface Components {
     MuiDataGrid?: {
       styleOverrides?: any;
@@ -19,80 +41,137 @@ declare module '@mui/material/styles' {
   }
 }
 
-// Modern flight search theme inspired by travel booking sites
+// Modern flight search theme with comprehensive design tokens
 export const theme = createTheme({
+  designTokens,
   palette: {
     mode: 'light',
     primary: {
-      main: '#1976d2', // Professional blue
-      light: '#42a5f5',
-      dark: '#1565c0',
+      main: designTokens.colors.primary.main,
+      light: designTokens.colors.primary.light,
+      dark: designTokens.colors.primary.dark,
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#26a69a', // Teal accent (like the mockup's green buttons)
-      light: '#4db6ac',
-      dark: '#00695c',
+      main: designTokens.colors.secondary.main,
+      light: designTokens.colors.secondary.light,
+      dark: designTokens.colors.secondary.dark,
+      contrastText: '#ffffff',
     },
     background: {
-      default: '#f5f7fa', // Light gray background like mockup
+      default: designTokens.colors.neutral[50],
       paper: '#ffffff',
     },
     text: {
-      primary: '#212121',
-      secondary: '#757575',
+      primary: designTokens.colors.neutral[900],
+      secondary: designTokens.colors.neutral[600],
+      disabled: designTokens.colors.neutral[400],
+    },
+    semantic: {
+      success: designTokens.colors.semantic.success,
+      warning: designTokens.colors.semantic.warning,
+      error: designTokens.colors.semantic.error,
+      info: designTokens.colors.semantic.info,
     },
     grey: {
-      50: '#fafafa',
-      100: '#f5f5f5',
-      200: '#eeeeee',
-      300: '#e0e0e0',
-      400: '#bdbdbd',
-      500: '#9e9e9e',
+      50: designTokens.colors.neutral[50],
+      100: designTokens.colors.neutral[100],
+      200: designTokens.colors.neutral[200],
+      300: designTokens.colors.neutral[300],
+      400: designTokens.colors.neutral[400],
+      500: designTokens.colors.neutral[500],
+      600: designTokens.colors.neutral[600],
+      700: designTokens.colors.neutral[700],
+      800: designTokens.colors.neutral[800],
+      900: designTokens.colors.neutral[900],
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h4: {
-      fontWeight: 600,
+    fontFamily: designTokens.typography.fontFamily,
+    h1: {
+      fontWeight: designTokens.typography.fontWeights.bold,
+      fontSize: '2.5rem',
+      lineHeight: 1.2,
+      letterSpacing: '-0.025em',
+    },
+    h2: {
+      fontWeight: designTokens.typography.fontWeights.semibold,
       fontSize: '2rem',
+      lineHeight: 1.25,
+      letterSpacing: '-0.025em',
+    },
+    h3: {
+      fontWeight: designTokens.typography.fontWeights.semibold,
+      fontSize: '1.5rem',
+      lineHeight: 1.3,
+      letterSpacing: '-0.02em',
+    },
+    h4: {
+      fontWeight: designTokens.typography.fontWeights.semibold,
+      fontSize: '1.25rem',
+      lineHeight: 1.4,
     },
     h5: {
-      fontWeight: 600,
-      fontSize: '1.5rem',
+      fontWeight: designTokens.typography.fontWeights.medium,
+      fontSize: '1.125rem',
+      lineHeight: 1.4,
     },
     h6: {
-      fontWeight: 600,
-      fontSize: '1.25rem',
+      fontWeight: designTokens.typography.fontWeights.medium,
+      fontSize: '1rem',
+      lineHeight: 1.5,
     },
     subtitle1: {
-      fontWeight: 500,
+      fontWeight: designTokens.typography.fontWeights.medium,
       fontSize: '1rem',
+      lineHeight: 1.5,
     },
-    body1: {
+    subtitle2: {
+      fontWeight: designTokens.typography.fontWeights.medium,
       fontSize: '0.875rem',
       lineHeight: 1.5,
     },
+    body1: {
+      fontWeight: designTokens.typography.fontWeights.regular,
+      fontSize: '1rem',
+      lineHeight: 1.6,
+    },
     body2: {
+      fontWeight: designTokens.typography.fontWeights.regular,
+      fontSize: '0.875rem',
+      lineHeight: 1.5,
+    },
+    caption: {
+      fontWeight: designTokens.typography.fontWeights.regular,
       fontSize: '0.75rem',
       lineHeight: 1.4,
     },
     button: {
-      fontWeight: 500,
-      textTransform: 'none', // Keep natural casing
+      fontWeight: designTokens.typography.fontWeights.medium,
+      fontSize: '0.875rem',
+      lineHeight: 1.5,
+      textTransform: 'none',
+      letterSpacing: '0.025em',
     },
   },
   shape: {
-    borderRadius: 12, // Modern rounded corners
+    borderRadius: designTokens.borderRadius.md,
   },
-  spacing: 8, // Consistent 8px grid
+  spacing: designTokens.spacing.unit,
+  breakpoints: {
+    values: designTokens.breakpoints,
+  },
   components: {
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-          border: '1px solid rgba(0,0,0,0.04)',
+          boxShadow: designTokens.elevation.card,
+          border: `1px solid ${designTokens.colors.neutral[200]}`,
+          borderRadius: designTokens.borderRadius.lg,
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            boxShadow: designTokens.elevation.hover,
+            transform: 'translateY(-1px)',
           },
         },
       },
@@ -100,36 +179,55 @@ export const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-          border: '1px solid rgba(0,0,0,0.04)',
+          boxShadow: designTokens.elevation.card,
+          border: `1px solid ${designTokens.colors.neutral[200]}`,
+          borderRadius: designTokens.borderRadius.md,
         },
         elevation1: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          boxShadow: designTokens.elevation.card,
         },
         elevation2: {
-          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+          boxShadow: designTokens.elevation.hover,
+        },
+        elevation4: {
+          boxShadow: designTokens.elevation.modal,
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          padding: '10px 24px',
+          borderRadius: designTokens.borderRadius.md,
+          padding: `${designTokens.spacing.sm + 2}px ${designTokens.spacing.lg}px`,
           fontSize: '0.875rem',
-          fontWeight: 500,
+          fontWeight: designTokens.typography.fontWeights.medium,
           textTransform: 'none',
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:focus-visible': {
+            outline: `2px solid ${designTokens.colors.primary.main}`,
+            outlineOffset: '2px',
+          },
         },
         contained: {
-          boxShadow: '0 2px 8px rgba(25,118,210,0.24)',
+          boxShadow: designTokens.elevation.card,
           '&:hover': {
-            boxShadow: '0 4px 16px rgba(25,118,210,0.32)',
+            boxShadow: designTokens.elevation.hover,
+            transform: 'translateY(-1px)',
+          },
+          '&:active': {
+            transform: 'translateY(0)',
           },
         },
         outlined: {
           borderWidth: '1.5px',
           '&:hover': {
             borderWidth: '1.5px',
+            backgroundColor: `${designTokens.colors.primary.main}08`,
+          },
+        },
+        text: {
+          '&:hover': {
+            backgroundColor: `${designTokens.colors.primary.main}08`,
           },
         },
       },
@@ -138,10 +236,28 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiOutlinedInput-root': {
-            borderRadius: 8,
+            borderRadius: designTokens.borderRadius.md,
             backgroundColor: '#ffffff',
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#1976d2',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            '& fieldset': {
+              borderColor: designTokens.colors.neutral[300],
+              borderWidth: '1.5px',
+            },
+            '&:hover fieldset': {
+              borderColor: designTokens.colors.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: designTokens.colors.primary.main,
+              borderWidth: '2px',
+            },
+            '&.Mui-error fieldset': {
+              borderColor: designTokens.colors.semantic.error,
+            },
+          },
+          '& .MuiInputLabel-root': {
+            fontWeight: designTokens.typography.fontWeights.medium,
+            '&.Mui-focused': {
+              color: designTokens.colors.primary.main,
             },
           },
         },
@@ -150,18 +266,29 @@ export const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 6,
+          borderRadius: designTokens.borderRadius.sm,
           fontSize: '0.75rem',
-          height: 28,
+          fontWeight: designTokens.typography.fontWeights.medium,
+          height: 32,
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         },
         filled: {
-          backgroundColor: '#e3f2fd',
-          color: '#1565c0',
+          backgroundColor: designTokens.colors.primary[100],
+          color: designTokens.colors.primary[700],
+          '&:hover': {
+            backgroundColor: designTokens.colors.primary[200],
+          },
           '& .MuiChip-deleteIcon': {
-            color: '#1565c0',
+            color: designTokens.colors.primary[600],
             '&:hover': {
-              color: '#0d47a1',
+              color: designTokens.colors.primary[800],
             },
+          },
+        },
+        outlined: {
+          borderColor: designTokens.colors.neutral[300],
+          '&:hover': {
+            backgroundColor: designTokens.colors.neutral[50],
           },
         },
       },
@@ -169,8 +296,10 @@ export const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-          borderBottom: '1px solid rgba(0,0,0,0.04)',
+          boxShadow: designTokens.elevation.card,
+          borderBottom: `1px solid ${designTokens.colors.neutral[200]}`,
+          backgroundColor: '#ffffff',
+          color: designTokens.colors.neutral[900],
         },
       },
     },
@@ -178,19 +307,99 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           border: 'none',
-          borderRadius: 12,
+          borderRadius: designTokens.borderRadius.lg,
+          backgroundColor: '#ffffff',
+          boxShadow: designTokens.elevation.card,
           '& .MuiDataGrid-cell': {
-            borderBottom: '1px solid #f0f0f0',
-            padding: '12px 16px',
+            borderBottom: `1px solid ${designTokens.colors.neutral[200]}`,
+            padding: `${designTokens.spacing.md}px`,
+            fontSize: '0.875rem',
           },
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#fafafa',
-            borderBottom: '2px solid #e0e0e0',
-            borderRadius: '12px 12px 0 0',
+            backgroundColor: designTokens.colors.neutral[50],
+            borderBottom: `2px solid ${designTokens.colors.neutral[200]}`,
+            borderRadius: `${designTokens.borderRadius.lg}px ${designTokens.borderRadius.lg}px 0 0`,
+            fontWeight: designTokens.typography.fontWeights.semibold,
+            fontSize: '0.875rem',
+            color: designTokens.colors.neutral[700],
           },
           '& .MuiDataGrid-row': {
+            transition: 'background-color 0.15s ease',
             '&:hover': {
-              backgroundColor: '#f8f9fa',
+              backgroundColor: designTokens.colors.neutral[50],
+            },
+            '&.Mui-selected': {
+              backgroundColor: `${designTokens.colors.primary.main}08`,
+              '&:hover': {
+                backgroundColor: `${designTokens.colors.primary.main}12`,
+              },
+            },
+          },
+          '& .MuiDataGrid-columnSeparator': {
+            display: 'none',
+          },
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: designTokens.colors.neutral[800],
+          color: '#ffffff',
+          fontSize: '0.75rem',
+          fontWeight: designTokens.typography.fontWeights.medium,
+          borderRadius: designTokens.borderRadius.sm,
+          boxShadow: designTokens.elevation.tooltip,
+          padding: `${designTokens.spacing.xs}px ${designTokens.spacing.sm}px`,
+        },
+        arrow: {
+          color: designTokens.colors.neutral[800],
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: designTokens.borderRadius.xl,
+          boxShadow: designTokens.elevation.modal,
+        },
+      },
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 0,
+          boxShadow: designTokens.elevation.modal,
+        },
+      },
+    },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        root: {
+          '& .MuiFormControlLabel-label': {
+            fontSize: '0.875rem',
+            fontWeight: designTokens.typography.fontWeights.regular,
+          },
+        },
+      },
+    },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          borderRadius: designTokens.borderRadius.sm,
+          '&:hover': {
+            backgroundColor: `${designTokens.colors.primary.main}08`,
+          },
+        },
+      },
+    },
+    MuiSlider: {
+      styleOverrides: {
+        root: {
+          '& .MuiSlider-thumb': {
+            boxShadow: designTokens.elevation.card,
+            '&:hover': {
+              boxShadow: designTokens.elevation.hover,
             },
           },
         },
@@ -198,6 +407,6 @@ export const theme = createTheme({
     },
   },
   status: {
-    danger: '#f44336',
+    danger: designTokens.colors.semantic.error,
   },
 });

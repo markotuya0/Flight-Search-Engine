@@ -4,6 +4,8 @@ import type { FlightSearchState, SearchParams, Filters, Flight } from '../domain
 import { searchFlights } from '../api/searchFlights';
 import { duffelSearchFlights } from '../api/duffelSearchFlights';
 import { normalizeAmadeusResponse, normalizeDuffelOffers } from '../domain/normalize';
+import { getCachedFlights, cacheFlightResults } from '../../../shared/utils/searchCache';
+import { logger } from '../../../shared/utils/logger';
 
 /**
  * Check if an error should trigger Duffel fallback
@@ -15,7 +17,7 @@ const shouldUseFallback = (error: any): boolean => {
     
     // Check for 5xx server errors
     if (status >= 500 && status < 600) {
-      console.log(`Amadeus 5xx error (${status}), triggering fallback`);
+      logger.log(`Amadeus 5xx error (${status}), triggering fallback`);
       return true;
     }
   }
@@ -24,7 +26,7 @@ const shouldUseFallback = (error: any): boolean => {
   if (error?.response?.data?.errors) {
     const hasError141 = error.response.data.errors.some((err: any) => err.code === "141");
     if (hasError141) {
-      console.log('Amadeus error 141 detected, triggering fallback');
+      logger.log('Amadeus error 141 detected, triggering fallback');
       return true;
     }
   }
@@ -32,26 +34,41 @@ const shouldUseFallback = (error: any): boolean => {
   // Check error message for common patterns
   const errorMessage = error?.message || '';
   if (errorMessage.includes('141') || errorMessage.includes('5')) {
-    console.log('Error message suggests fallback condition:', errorMessage);
+    logger.log('Error message suggests fallback condition:', errorMessage);
     return true;
   }
 
   return false;
 };
 
-// Async thunk for fetching flights with fallback support
+// Async thunk for fetching flights with fallback support and caching
 export const fetchFlights = createAsyncThunk(
   'flightSearch/fetchFlights',
   async (searchParams: SearchParams, { rejectWithValue }) => {
-    console.log('Starting flight search with params:', searchParams);
+    logger.log('Starting flight search with params:', searchParams);
+    
+    // Check cache first
+    const cachedResult = getCachedFlights(searchParams);
+    if (cachedResult) {
+      logger.log('✅ Using cached results');
+      return {
+        flights: cachedResult.flights,
+        searchParams,
+        usedFallback: cachedResult.usedFallback || false,
+      };
+    }
     
     try {
       // Try Amadeus first (primary provider)
-      console.log('Attempting Amadeus search...');
+      logger.log('Attempting Amadeus search...');
       const amadeusResponse = await searchFlights(searchParams);
       const flights = normalizeAmadeusResponse(amadeusResponse);
       
-      console.log(`Amadeus search successful: ${flights.length} flights found`);
+      logger.log(`Amadeus search successful: ${flights.length} flights found`);
+      
+      // Cache the results
+      cacheFlightResults(searchParams, flights, false);
+      
       return { 
         flights, 
         searchParams, 
@@ -63,11 +80,15 @@ export const fetchFlights = createAsyncThunk(
       // Check if we should try Duffel fallback
       if (shouldUseFallback(amadeusError)) {
         try {
-          console.log('Attempting Duffel fallback...');
+          logger.log('Attempting Duffel fallback...');
           const duffelOffers = await duffelSearchFlights(searchParams);
           const flights = normalizeDuffelOffers(duffelOffers);
           
-          console.log(`Duffel fallback successful: ${flights.length} flights found`);
+          logger.log(`Duffel fallback successful: ${flights.length} flights found`);
+          
+          // Cache the fallback results
+          cacheFlightResults(searchParams, flights, true);
+          
           return { 
             flights, 
             searchParams, 
@@ -105,8 +126,13 @@ const initialState: FlightSearchState = {
       min: 0,
       max: 2000,
     },
+    sortBy: 'price-asc',
   },
   allFlights: [],
+  selectedForComparison: [], // Flight IDs selected for comparison
+  comparisonMode: false, // Whether comparison dialog is open
+  bookingOpen: false, // Whether booking flow is open
+  selectedFlightForBooking: null, // Flight selected for booking
   status: 'idle',
   error: undefined,
   usedFallback: false,
@@ -142,6 +168,7 @@ const flightSearchSlice = createSlice({
           min: minPrice,
           max: maxPrice,
         },
+        sortBy: 'price-asc',
       };
     },
     
@@ -179,6 +206,39 @@ const flightSearchSlice = createSlice({
     clearError: (state) => {
       state.error = undefined;
     },
+    
+    toggleFlightForComparison: (state, action: PayloadAction<string>) => {
+      const flightId = action.payload;
+      const index = state.selectedForComparison.indexOf(flightId);
+      
+      if (index > -1) {
+        // Remove from selection
+        state.selectedForComparison.splice(index, 1);
+      } else {
+        // Add to selection (max 3 flights)
+        if (state.selectedForComparison.length < 3) {
+          state.selectedForComparison.push(flightId);
+        }
+      }
+    },
+    
+    clearComparisonSelection: (state) => {
+      state.selectedForComparison = [];
+    },
+    
+    setComparisonMode: (state, action: PayloadAction<boolean>) => {
+      state.comparisonMode = action.payload;
+    },
+    
+    openBookingFlow: (state, action: PayloadAction<Flight>) => {
+      state.bookingOpen = true;
+      state.selectedFlightForBooking = action.payload;
+    },
+    
+    closeBookingFlow: (state) => {
+      state.bookingOpen = false;
+      state.selectedFlightForBooking = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -208,6 +268,7 @@ const flightSearchSlice = createSlice({
               min: minPrice,
               max: maxPrice,
             },
+            sortBy: 'price-asc',
           };
         }
       })
@@ -228,6 +289,11 @@ export const {
   setLoading,
   setError,
   clearError,
+  toggleFlightForComparison,
+  clearComparisonSelection,
+  setComparisonMode,
+  openBookingFlow,
+  closeBookingFlow,
 } = flightSearchSlice.actions;
 
 export default flightSearchSlice.reducer;
